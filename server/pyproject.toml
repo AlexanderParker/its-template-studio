@@ -5,13 +5,5 @@ description = "HTTP compile service wrapping the its-compiler reference implemen
 requires-python = ">=3.10"
 dependencies = [
     "fastapi[standard]>=0.111",
-    "its-compiler",
+    "its-compiler>=1.0.4",
 ]
-
-[[tool.uv.index]]
-name = "testpypi"
-url = "https://test.pypi.org/simple/"
-explicit = true
-
-[tool.uv.sources]
-its-compiler = { index = "testpypi" }

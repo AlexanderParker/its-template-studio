@@ -9,10 +9,12 @@ interface ServerCompileResponse {
   compiler?: string;
 }
 
-// The dev server proxies /its-api to the Python service (see vite.config.ts),
-// keeping requests same-origin. An absolute URL also works when the service
-// is reached directly, as its CORS middleware permits cross-origin requests.
-export const DEFAULT_SERVER_URL = "/its-api";
+// In development the dev server proxies /its-api to the Python service (see
+// vite.config.ts), keeping requests same-origin. Production builds have no
+// proxy, so VITE_ITS_API_URL supplies the absolute URL of the deployed
+// compile service at build time; its CORS middleware must allow the site's
+// origin.
+export const DEFAULT_SERVER_URL = import.meta.env.VITE_ITS_API_URL ?? "/its-api";
 
 export async function compileOnServer(
   serverUrl: string,

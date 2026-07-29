@@ -9,7 +9,10 @@ import { defineConfig } from "vite";
 //
 // The /its-api proxy forwards server-side compile requests to the Python
 // service so the browser only ever talks to the dev server's own origin.
-export default defineConfig({
+// The production base matches the GitHub Pages project path; local dev and
+// preview stay at the root.
+export default defineConfig(({ mode }) => ({
+  base: mode === "production" ? "/its-template-studio/" : "/",
   plugins: [react()],
   resolve: {
     alias: {
@@ -40,4 +43,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));
