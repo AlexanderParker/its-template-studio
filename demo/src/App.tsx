@@ -4,7 +4,7 @@ import { TemplateEditor } from "its-template-editor";
 import { compileInBrowser, type CompileOutcome } from "./compiler/browser";
 import { compileOnServer, DEFAULT_SERVER_URL } from "./compiler/server";
 import { exportTemplate, importTemplate } from "./compiler/io";
-import { loadStandardTypes } from "./data/instructionTypes";
+import { loadInstructionTypes } from "./data/instructionTypes";
 import { datasetsForTemplate, sampleDatasets } from "./data/sampleDatasets";
 import { sampleTemplates } from "./data/sampleTemplates";
 import { OutputPanel } from "./components/OutputPanel";
@@ -24,12 +24,12 @@ export function App(): JSX.Element {
   const [compiling, setCompiling] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
   const [paletteTypes, setPaletteTypes] = useState<Record<string, InstructionTypeDefinition>>({});
-  const [paletteSource, setPaletteSource] = useState<"live" | "bundled" | null>(null);
+  const [paletteSource, setPaletteSource] = useState<"live" | "bundled" | "mixed" | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let cancelled = false;
-    void loadStandardTypes().then(({ types, source }) => {
+    void loadInstructionTypes().then(({ types, source }) => {
       if (!cancelled) {
         setPaletteTypes(types);
         setPaletteSource(source);
@@ -194,7 +194,7 @@ export function App(): JSX.Element {
                   onChange={(event) => setInlineTypes(event.target.checked)}
                 />
                 <span>
-                  Inline standard types (skip fetching the schema; useful offline)
+                  Inline bundled type libraries (skip fetching the schemas; useful offline)
                 </span>
               </label>
             )}
@@ -215,9 +215,11 @@ export function App(): JSX.Element {
               {compiling ? "Compiling…" : "Compile template"}
             </button>
 
-            {paletteSource === "bundled" && (
+            {(paletteSource === "bundled" || paletteSource === "mixed") && (
               <p className="panel__hint">
-                Standard types schema could not be fetched; the editor palette is using a bundled copy.
+                {paletteSource === "bundled"
+                  ? "Type library schemas could not be fetched; the editor palette is using bundled copies."
+                  : "Some type library schemas could not be fetched; the editor palette is partly using bundled copies."}
               </p>
             )}
           </section>

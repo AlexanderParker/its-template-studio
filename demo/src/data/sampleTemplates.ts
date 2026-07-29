@@ -1,5 +1,5 @@
 import type { ItsTemplate } from "its-template-editor";
-import { BASE_SCHEMA_URL, STANDARD_TYPES_URL } from "./instructionTypes";
+import { BASE_SCHEMA_URL, HTML_TYPES_URL, JSON_TYPES_URL, STANDARD_TYPES_URL, YAML_TYPES_URL } from "./instructionTypes";
 
 export interface SampleTemplate {
   id: string;
@@ -291,6 +291,277 @@ export const sampleTemplates: SampleTemplate[] = [
               },
             },
           ],
+        },
+      ],
+    },
+  },
+  {
+    id: "api-response",
+    label: "API response docs (JSON types)",
+    template: {
+      $schema: BASE_SCHEMA_URL,
+      version: "1.0.0",
+      extends: [JSON_TYPES_URL],
+      metadata: {
+        name: "API response documentation",
+        description: "Documents a REST endpoint with generated JSON example responses, using the JSON type library.",
+        author: "ITS Template Studio",
+      },
+      variables: {
+        api: { baseUrl: "https://api.example.com/v2", version: "2.4.0" },
+        resource: { name: "orders", idField: "orderId" },
+        includeErrorExample: true,
+      },
+      content: [
+        {
+          type: "text",
+          text: "# ${resource.name} API (v${api.version})\n\n## GET ${api.baseUrl}/${resource.name}\n\nReturns a paginated collection of ${resource.name}.\n\n### Example response\n\n",
+          id: "t-endpoint-heading",
+        },
+        {
+          type: "placeholder",
+          id: "p-collection-response",
+          instructionType: "json_object",
+          config: {
+            description:
+              "A paginated API response for ${resource.name} with a data array of three items keyed by ${resource.idField}, plus page, pageSize and total fields",
+            displayName: "Collection response",
+            indent: "two_spaces",
+          },
+        },
+        {
+          type: "text",
+          text: "\n\n### Allowed status values\n\n",
+          id: "t-status-heading",
+        },
+        {
+          type: "placeholder",
+          id: "p-status-values",
+          instructionType: "json_array",
+          config: {
+            description: "An array of five plausible status strings for ${resource.name}",
+            displayName: "Status values",
+            itemCount: 5,
+            indent: "compact",
+          },
+        },
+        {
+          type: "conditional",
+          id: "c-error-example",
+          condition: "includeErrorExample == true",
+          content: [
+            {
+              type: "text",
+              text: "\n\n### Error response\n\nReturned with HTTP status 404 when the resource does not exist.\n\n",
+              id: "t-error-heading",
+            },
+            {
+              type: "placeholder",
+              id: "p-error-response",
+              instructionType: "json_object",
+              config: {
+                description:
+                  "An error response object with error.code set to not_found and a human-readable error.message about a missing ${resource.name} resource",
+                displayName: "Error response",
+                indent: "two_spaces",
+              },
+            },
+          ],
+        },
+        {
+          type: "text",
+          text: "\n\n### Response schema\n\n",
+          id: "t-schema-heading",
+        },
+        {
+          type: "placeholder",
+          id: "p-response-schema",
+          instructionType: "json_schema",
+          config: {
+            description: "A JSON Schema describing the paginated ${resource.name} response above",
+            displayName: "Response schema",
+            draft: "2020-12",
+            indent: "two_spaces",
+          },
+        },
+      ],
+    },
+  },
+  {
+    id: "ci-pipeline",
+    label: "CI pipeline config (YAML types)",
+    template: {
+      $schema: BASE_SCHEMA_URL,
+      version: "1.0.0",
+      extends: [YAML_TYPES_URL],
+      metadata: {
+        name: "CI pipeline configuration",
+        description: "Generates a CI pipeline document with an optional deploy stage, using the YAML type library.",
+        author: "ITS Template Studio",
+      },
+      variables: {
+        project: { name: "example-storefront", language: "node", repository: "https://git.example.com/acme/example-storefront" },
+        includeDeployStage: true,
+      },
+      content: [
+        {
+          type: "text",
+          text: "# CI configuration for ${project.name}\n# Repository: ${project.repository}\n\n",
+          id: "t-header-comment",
+        },
+        {
+          type: "placeholder",
+          id: "p-pipeline-document",
+          instructionType: "yaml_document",
+          config: {
+            description:
+              "A CI pipeline for the ${project.language} project ${project.name} with build and test jobs, caching dependencies between runs",
+            displayName: "Pipeline document",
+            indentSize: 2,
+            useAnchors: false,
+          },
+        },
+        {
+          type: "conditional",
+          id: "c-deploy-stage",
+          condition: "includeDeployStage == true",
+          content: [
+            {
+              type: "text",
+              text: "\n\n# Deploy stage, appended to the jobs mapping above\n\n",
+              id: "t-deploy-comment",
+            },
+            {
+              type: "placeholder",
+              id: "p-deploy-stage",
+              instructionType: "yaml_block",
+              config: {
+                description: "A deploy job for ${project.name} that runs only on the main branch and depends on the test job",
+                displayName: "Deploy stage",
+                indentSize: 2,
+              },
+            },
+          ],
+        },
+        {
+          type: "text",
+          text: "\n\n# Frontmatter for the pipeline documentation page\n\n",
+          id: "t-frontmatter-comment",
+        },
+        {
+          type: "placeholder",
+          id: "p-frontmatter",
+          instructionType: "yaml_frontmatter",
+          config: {
+            description: "Frontmatter for a docs page about the ${project.name} pipeline with title, description and tags fields",
+            displayName: "Docs frontmatter",
+            fieldCount: 3,
+          },
+        },
+      ],
+    },
+  },
+  {
+    id: "product-card",
+    label: "Product card fragment (HTML types)",
+    template: {
+      $schema: BASE_SCHEMA_URL,
+      version: "1.0.0",
+      extends: [HTML_TYPES_URL],
+      metadata: {
+        name: "Product card fragment",
+        description: "Builds an HTML product card fragment that slots into surrounding markup, using the HTML type library.",
+        author: "ITS Template Studio",
+      },
+      variables: {
+        product: { name: "Solar Garden Lantern", url: "https://www.example.com/products/solar-garden-lantern" },
+        includeSpecifications: true,
+        includeEnquiryForm: false,
+      },
+      content: [
+        {
+          type: "text",
+          text: '<section class="product-card">\n  <h2><a href="${product.url}">${product.name}</a></h2>\n\n',
+          id: "t-card-open",
+        },
+        {
+          type: "placeholder",
+          id: "p-summary",
+          instructionType: "html_fragment",
+          config: {
+            description: "A short marketing summary of the ${product.name} as one paragraph element with a class attribute",
+            displayName: "Product summary",
+            rootElement: "p",
+            includeClasses: true,
+          },
+        },
+        {
+          type: "text",
+          text: "\n\n  <h3>Key features</h3>\n\n",
+          id: "t-features-heading",
+        },
+        {
+          type: "placeholder",
+          id: "p-features",
+          instructionType: "html_list",
+          config: {
+            description: "Four key features of the ${product.name} focused on benefits for the buyer",
+            displayName: "Feature list",
+            listType: "unordered",
+            itemCount: 4,
+          },
+        },
+        {
+          type: "conditional",
+          id: "c-specifications",
+          condition: "includeSpecifications == true",
+          content: [
+            {
+              type: "text",
+              text: "\n\n  <h3>Specifications</h3>\n\n",
+              id: "t-specs-heading",
+            },
+            {
+              type: "placeholder",
+              id: "p-spec-table",
+              instructionType: "html_table",
+              config: {
+                description:
+                  "A two-column specifications table for the ${product.name} listing dimensions, weight, battery life and materials",
+                displayName: "Specifications table",
+                columns: 2,
+                includeHeader: true,
+              },
+            },
+          ],
+        },
+        {
+          type: "conditional",
+          id: "c-enquiry-form",
+          condition: "includeEnquiryForm == true",
+          content: [
+            {
+              type: "text",
+              text: "\n\n  <h3>Ask about this product</h3>\n\n",
+              id: "t-enquiry-heading",
+            },
+            {
+              type: "placeholder",
+              id: "p-enquiry-fields",
+              instructionType: "html_form_fields",
+              config: {
+                description: "Name, email and message fields for an enquiry about the ${product.name}",
+                displayName: "Enquiry fields",
+                fieldCount: 3,
+                includeLabels: true,
+              },
+            },
+          ],
+        },
+        {
+          type: "text",
+          text: "\n</section>",
+          id: "t-card-close",
         },
       ],
     },

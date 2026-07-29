@@ -24,11 +24,12 @@ Open the printed URL. The browser engine works immediately; the server engine ne
 ## Demo features
 
 - **WYSIWYG editing** of text blocks, instruction placeholders and conditionals (with else branches and nesting), plus variables, metadata and a two-way JSON source view.
-- **Sample templates**: product launch copy, a blog post brief, and a project README, all extending the ITS standard types schema.
+- **All published type libraries in the palette**: the standard (prose) types plus the JSON, HTML and YAML structured-output libraries, fetched live with bundled fallbacks merged in a stable order.
+- **Sample templates**: product launch copy, a blog post brief and a project README on the standard types, plus API response documentation (JSON types), a CI pipeline configuration (YAML types) and an HTML product card fragment (HTML types).
 - **Sample datasets**: variable sets injected at compile time, overriding template defaults exactly as a `--variables` file would with the CLI compilers.
 - **Import / export**: templates round-trip as standard ITS JSON files.
 - **Two compile engines**:
-  - Browser: `its-compiler-js` bundled into the page. Remote `extends` schemas resolve over HTTPS from the browser; an "inline standard types" option substitutes a bundled copy of the standard types for offline use.
+  - Browser: `its-compiler-js` bundled into the page. Remote `extends` schemas resolve over HTTPS from the browser; an "inline bundled type libraries" option substitutes bundled copies of any referenced library for offline use.
   - Server: POSTs the template and variables through the dev proxy to the FastAPI service, which compiles with the Python reference implementation.
 
 ## Server-side compiler
@@ -65,3 +66,4 @@ This emits ESM, CJS, type declarations and the stylesheet to `packages/its-edito
 | `npm run build:editor` | Build the publishable editor package                          |
 | `npm run typecheck`    | Strict TypeScript checks across all workspaces                |
 | `npm run smoke -w demo`| Compile every sample template with every applicable dataset   |
+| `npm run check:schemas -w demo` | Verify bundled type library copies are byte-identical to the published files (needs network) |
