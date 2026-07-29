@@ -57,6 +57,34 @@ This emits ESM, CJS, type declarations and the stylesheet to `packages/its-edito
 
 `its-compiler-js` targets Node and imports `fs`, `url` and `node-fetch` at module scope. The demo aliases these to thin shims (`demo/src/stubs/`): `url` re-exports the native `URL`, `node-fetch` re-exports native `fetch`, and `fs` throws if touched, which only happens via `compileFile()`, never used by the demo. Everything else in the compiler (validation, variable processing, jsep-based conditional evaluation, schema loading over HTTPS) runs unmodified in the browser.
 
+## Deployment
+
+The demo is published on GitHub Pages with the compile service on Railway, so both engines work in production.
+
+### Compile service (Railway)
+
+The Railway service deploys the `server/` directory: uv-based install driven by `pyproject.toml`/`uv.lock` (its-compiler resolves from PyPI), configured by `server/railway.json` (start command `uv run fastapi run app.py --port $PORT`, health check `/health`). To redeploy after changing the server:
+
+```bash
+cd server
+railway up --service compile-server --ci -m "describe the change"
+```
+
+Environment variables on the service:
+
+- `ITS_CORS_ORIGINS` (optional): comma-separated allowed origins. The default in `app.py` covers the Pages origin (`https://alexanderparker.github.io`) and localhost dev ports. The demo's compile request is a JSON POST, which triggers a CORS preflight; the middleware answers the OPTIONS request.
+- `ITS_INTERACTIVE_ALLOWLIST=false`: the compiler never prompts on the headless server (the published schema URLs are trusted by its built-in patterns regardless).
+
+### Demo (GitHub Pages)
+
+`.github/workflows/deploy-pages.yml` builds the demo on every push to main and deploys `demo/dist` to Pages (Actions source). The build reads the repository variable `VITE_ITS_API_URL`, which must be set to the Railway service URL (currently `https://compile-server-production-529e.up.railway.app`); it is baked into the bundle as the production server-engine URL. Locally the value is unset and the dev proxy (`/its-api`) is used instead. Vite's `base` is `/its-template-studio/` in production builds so assets resolve on the project Pages path.
+
+To point the site at a different compile service, update the repository variable and re-run the workflow:
+
+```bash
+gh variable set VITE_ITS_API_URL --body "https://your-service.example.com"
+```
+
 ## Scripts
 
 | Command                | Purpose                                                      |

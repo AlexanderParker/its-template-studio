@@ -8,6 +8,7 @@ demo front end can compile templates server-side. Exposes:
     GET  /health
 """
 
+import os
 from typing import Any, Dict, Optional
 
 from fastapi import FastAPI
@@ -16,11 +17,26 @@ from pydantic import BaseModel, Field
 
 from its_compiler import ITSCompiler
 
+# Comma-separated allowed origins. The default covers the published demo on
+# GitHub Pages plus common local dev origins; the dev proxy keeps local
+# requests same-origin anyway. Set ITS_CORS_ORIGINS to override.
+DEFAULT_CORS_ORIGINS = (
+    "https://alexanderparker.github.io,"
+    "http://localhost:5173,"
+    "http://127.0.0.1:5173,"
+    "http://localhost:4173,"
+    "http://127.0.0.1:4173"
+)
+
 app = FastAPI(title="ITS Compile Service", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        origin.strip()
+        for origin in os.getenv("ITS_CORS_ORIGINS", DEFAULT_CORS_ORIGINS).split(",")
+        if origin.strip()
+    ],
     allow_methods=["POST", "GET", "OPTIONS"],
     allow_headers=["*"],
 )
