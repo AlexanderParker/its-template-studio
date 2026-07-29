@@ -88,6 +88,64 @@ export const sampleDatasets: SampleDataset[] = [
       includeQuickStart: false,
     },
   },
+  {
+    id: "orders-api",
+    label: "Orders API with error example",
+    templateIds: ["api-response"],
+    variables: {
+      api: { baseUrl: "https://api.example.com/v2", version: "2.4.0" },
+      resource: { name: "orders", idField: "orderId" },
+      includeErrorExample: true,
+    },
+  },
+  {
+    id: "invoices-api",
+    label: "Invoices API, no error example",
+    templateIds: ["api-response"],
+    variables: {
+      api: { baseUrl: "https://api.example.com/v3", version: "3.0.1" },
+      resource: { name: "invoices", idField: "invoiceId" },
+      includeErrorExample: false,
+    },
+  },
+  {
+    id: "node-storefront",
+    label: "Node storefront with deploy stage",
+    templateIds: ["ci-pipeline"],
+    variables: {
+      project: { name: "example-storefront", language: "node", repository: "https://git.example.com/acme/example-storefront" },
+      includeDeployStage: true,
+    },
+  },
+  {
+    id: "python-billing",
+    label: "Python billing service, no deploy stage",
+    templateIds: ["ci-pipeline"],
+    variables: {
+      project: { name: "example-billing", language: "python", repository: "https://git.example.com/acme/example-billing" },
+      includeDeployStage: false,
+    },
+  },
+  {
+    id: "lantern-card",
+    label: "Garden lantern with specifications",
+    templateIds: ["product-card"],
+    variables: {
+      product: { name: "Solar Garden Lantern", url: "https://www.example.com/products/solar-garden-lantern" },
+      includeSpecifications: true,
+      includeEnquiryForm: false,
+    },
+  },
+  {
+    id: "stove-card-enquiry",
+    label: "Camping stove with enquiry form, no specs",
+    templateIds: ["product-card"],
+    variables: {
+      product: { name: "Compact Camping Stove", url: "https://www.example.com/products/compact-camping-stove" },
+      includeSpecifications: false,
+      includeEnquiryForm: true,
+    },
+  },
 ];
 
 export function datasetsForTemplate(templateId: string | null): SampleDataset[] {

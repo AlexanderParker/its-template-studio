@@ -1,5 +1,5 @@
 import { compile } from "its-compiler-js";
-import { inlineStandardTypes } from "../src/compiler/browser";
+import { inlineBundledLibraries } from "../src/compiler/browser";
 import { sampleDatasets } from "../src/data/sampleDatasets";
 import { sampleTemplates } from "../src/data/sampleTemplates";
 
@@ -10,7 +10,7 @@ async function main(): Promise<void> {
       (d) => d.templateIds.length === 0 || d.templateIds.includes(sample.id),
     );
     for (const dataset of datasets) {
-      const template = inlineStandardTypes(sample.template);
+      const template = inlineBundledLibraries(sample.template);
       try {
         const result = await compile(template, dataset.variables);
         const hasPlaceholders = result.prompt.includes("<<");
