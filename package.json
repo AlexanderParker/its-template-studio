@@ -1,0 +1,16 @@
+{
+  "name": "its-template-studio",
+  "private": true,
+  "version": "0.1.0",
+  "description": "WYSIWYG template studio for the Instruction Template Specification (ITS)",
+  "workspaces": [
+    "packages/*",
+    "demo"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace demo",
+    "build": "npm run build --workspace demo",
+    "build:editor": "npm run build --workspace its-template-editor",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  }
+}
