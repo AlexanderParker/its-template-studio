@@ -13,12 +13,22 @@
         "properties": {
           "style": {
             "type": "string",
-            "enum": ["headline", "descriptive", "catchy", "formal", "creative"],
+            "enum": [
+              "headline",
+              "descriptive",
+              "catchy",
+              "formal",
+              "creative"
+            ],
             "default": "headline"
           },
           "length": {
             "type": "string",
-            "enum": ["short", "medium", "long"],
+            "enum": [
+              "short",
+              "medium",
+              "long"
+            ],
             "default": "short"
           }
         }
@@ -32,7 +42,12 @@
         "properties": {
           "format": {
             "type": "string",
-            "enum": ["bullet_points", "numbered", "dashes", "plain"],
+            "enum": [
+              "bullet_points",
+              "numbered",
+              "dashes",
+              "plain"
+            ],
             "default": "bullet_points"
           },
           "itemCount": {
@@ -42,7 +57,17 @@
             "description": "If specified, the exact number of items to generate"
           }
         }
-      }
+      },
+      "examples": [
+        {
+          "config": {
+            "description": "list 5 different citrus fruits",
+            "format": "bullet_points",
+            "itemCount": 5
+          },
+          "output": "<<Replace this placeholder with a list using this user prompt: ([{<list 5 different citrus fruits>}]). Format requirements: Use bullet_points formatting with each item on a new line.>>"
+        }
+      ]
     },
     "paragraph": {
       "template": "<<Replace this placeholder with text using this user prompt: ([{<{description}>}]). Format requirements: Use {tone} tone and {length} length (short=1-2 sentences, medium=2-4 sentences, long=4+ sentences).>>",
@@ -52,12 +77,22 @@
         "properties": {
           "tone": {
             "type": "string",
-            "enum": ["formal", "casual", "enthusiastic", "professional", "friendly"],
+            "enum": [
+              "formal",
+              "casual",
+              "enthusiastic",
+              "professional",
+              "friendly"
+            ],
             "default": "professional"
           },
           "length": {
             "type": "string",
-            "enum": ["short", "medium", "long"],
+            "enum": [
+              "short",
+              "medium",
+              "long"
+            ],
             "default": "medium"
           }
         }
@@ -71,7 +106,11 @@
         "properties": {
           "format": {
             "type": "string",
-            "enum": ["markdown", "plain_text", "csv"],
+            "enum": [
+              "markdown",
+              "plain_text",
+              "csv"
+            ],
             "default": "markdown"
           },
           "columns": {
@@ -97,7 +136,16 @@
         "properties": {
           "language": {
             "type": "string",
-            "enum": ["javascript", "python", "java", "html", "css", "sql", "bash", "generic"],
+            "enum": [
+              "javascript",
+              "python",
+              "java",
+              "html",
+              "css",
+              "sql",
+              "bash",
+              "generic"
+            ],
             "default": "generic"
           }
         }
@@ -111,7 +159,11 @@
         "properties": {
           "style": {
             "type": "string",
-            "enum": ["photorealistic", "artistic", "technical"],
+            "enum": [
+              "photorealistic",
+              "artistic",
+              "technical"
+            ],
             "default": "photorealistic"
           }
         }
@@ -131,7 +183,12 @@
           },
           "style": {
             "type": "string",
-            "enum": ["casual", "formal", "dramatic", "humorous"],
+            "enum": [
+              "casual",
+              "formal",
+              "dramatic",
+              "humorous"
+            ],
             "default": "casual"
           }
         }
@@ -159,7 +216,11 @@
         "properties": {
           "length": {
             "type": "string",
-            "enum": ["brief", "standard", "detailed"],
+            "enum": [
+              "brief",
+              "standard",
+              "detailed"
+            ],
             "default": "standard"
           }
         }

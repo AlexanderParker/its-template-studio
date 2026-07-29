@@ -1,7 +1,6 @@
 import { compile } from "its-compiler-js";
 import type { InstructionTypeDefinition, ItsTemplate, JsonValue } from "its-template-editor";
-import { STANDARD_TYPES_URL } from "../data/instructionTypes";
-import bundledStandardTypes from "../data/standard-types.json";
+import { TYPE_LIBRARIES } from "../data/instructionTypes";
 
 export interface CompileOutcome {
   ok: boolean;
@@ -12,25 +11,36 @@ export interface CompileOutcome {
   engine: "browser" | "server";
 }
 
-interface TypeExtensionSchema {
-  instructionTypes?: Record<string, InstructionTypeDefinition>;
-}
-
 /**
- * Replaces the standard-types extends reference with inline custom
- * instruction types from the bundled schema. Used when remote schema
- * resolution is unavailable or disabled.
+ * Replaces extends references to any bundled type library with inline
+ * custom instruction types from the bundled copies. Used when remote
+ * schema resolution is unavailable or disabled. Libraries are inlined in
+ * the template's extends order so override precedence is preserved;
+ * unrecognised extends URLs are left in place.
  */
-export function inlineStandardTypes(template: ItsTemplate): ItsTemplate {
-  const remaining = (template.extends ?? []).filter((url) => url !== STANDARD_TYPES_URL);
-  const referencesStandardTypes = (template.extends ?? []).length !== remaining.length;
-  if (!referencesStandardTypes) return template;
+export function inlineBundledLibraries(template: ItsTemplate): ItsTemplate {
+  const extendsList = template.extends ?? [];
+  const bundledByUrl = new Map(TYPE_LIBRARIES.map((library) => [library.url, library.bundled]));
 
-  const standardTypes = (bundledStandardTypes as TypeExtensionSchema).instructionTypes ?? {};
+  const inlined: Record<string, InstructionTypeDefinition> = {};
+  const remaining: string[] = [];
+  let replacedAny = false;
+
+  for (const url of extendsList) {
+    const bundled = bundledByUrl.get(url);
+    if (bundled) {
+      Object.assign(inlined, bundled.instructionTypes ?? {});
+      replacedAny = true;
+    } else {
+      remaining.push(url);
+    }
+  }
+  if (!replacedAny) return template;
+
   const next: ItsTemplate = {
     ...template,
     customInstructionTypes: {
-      ...standardTypes,
+      ...inlined,
       ...(template.customInstructionTypes ?? {}),
     },
   };
@@ -48,7 +58,7 @@ export async function compileInBrowser(
   options: { inlineTypes: boolean },
 ): Promise<CompileOutcome> {
   const started = performance.now();
-  const input = options.inlineTypes ? inlineStandardTypes(template) : template;
+  const input = options.inlineTypes ? inlineBundledLibraries(template) : template;
   try {
     const result = await compile(input, variables);
     return {
