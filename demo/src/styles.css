@@ -428,12 +428,22 @@ a:hover {
     overflow-y: auto;
   }
 
+  /* In the stacked layout the sidebar must take its natural height; as a
+     shrinkable flex child with internal scrolling it collapses to nothing */
+  .sidebar {
+    overflow-y: visible;
+    min-height: auto;
+    flex-shrink: 0;
+  }
+
   .editor-pane {
     min-height: 480px;
+    flex-shrink: 0;
   }
 
   .output {
     min-height: 320px;
+    flex-shrink: 0;
   }
 }
 
