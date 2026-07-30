@@ -15,6 +15,21 @@ export interface SampleTemplate {
  * JSON structure serialiser with a stable group id so it opens in the
  * interactive builder.
  */
+/**
+ * The weekly forecast dataset rendered as one compact line of ${...}
+ * references. It lives inside the placeholders' user prompts rather than in
+ * template text, so the model reads the data but never reproduces it: text
+ * elements are echoed verbatim into the output, while placeholder markers
+ * (including their user prompts) are replaced entirely by generated content.
+ */
+const FORECAST_DATA_LINE = [0, 1, 2, 3, 4, 5, 6]
+  .map(
+    (day) =>
+      `\${forecast[${day}].day} high \${forecast[${day}].high}C low \${forecast[${day}].low}C ` +
+      `rain \${forecast[${day}].rainChancePct}% wind \${forecast[${day}].windKmh}km/h \${forecast[${day}].condition}`,
+  )
+  .join("; ");
+
 const apiResponseStructure: JsonStructure = {
   kind: "object",
   entries: [
@@ -392,19 +407,8 @@ export const sampleTemplates: SampleTemplate[] = [
       content: [
         {
           type: "text",
-          text:
-            "# Weekly weather briefing: ${location}\n\nWeek of ${weekOf}. Data for ${forecast.length} days.\n\n" +
-            "| Day | High (C) | Low (C) | Rain % | Wind km/h | Conditions |\n" +
-            "| --- | --- | --- | --- | --- | --- |\n" +
-            "| ${forecast[0].day} | ${forecast[0].high} | ${forecast[0].low} | ${forecast[0].rainChancePct} | ${forecast[0].windKmh} | ${forecast[0].condition} |\n" +
-            "| ${forecast[1].day} | ${forecast[1].high} | ${forecast[1].low} | ${forecast[1].rainChancePct} | ${forecast[1].windKmh} | ${forecast[1].condition} |\n" +
-            "| ${forecast[2].day} | ${forecast[2].high} | ${forecast[2].low} | ${forecast[2].rainChancePct} | ${forecast[2].windKmh} | ${forecast[2].condition} |\n" +
-            "| ${forecast[3].day} | ${forecast[3].high} | ${forecast[3].low} | ${forecast[3].rainChancePct} | ${forecast[3].windKmh} | ${forecast[3].condition} |\n" +
-            "| ${forecast[4].day} | ${forecast[4].high} | ${forecast[4].low} | ${forecast[4].rainChancePct} | ${forecast[4].windKmh} | ${forecast[4].condition} |\n" +
-            "| ${forecast[5].day} | ${forecast[5].high} | ${forecast[5].low} | ${forecast[5].rainChancePct} | ${forecast[5].windKmh} | ${forecast[5].condition} |\n" +
-            "| ${forecast[6].day} | ${forecast[6].high} | ${forecast[6].low} | ${forecast[6].rainChancePct} | ${forecast[6].windKmh} | ${forecast[6].condition} |\n" +
-            "\n## Trend summary\n\n",
-          id: "t-forecast-table",
+          text: "# Weekly weather briefing: ${location}\n\nWeek of ${weekOf}.\n\n## Trend summary\n\n",
+          id: "t-report-heading",
         },
         {
           type: "placeholder",
@@ -412,7 +416,8 @@ export const sampleTemplates: SampleTemplate[] = [
           instructionType: "paragraph",
           config: {
             description:
-              "Summarise the temperature, rain and wind trends across the week for ${location} using only the data in the table above, naming the warmest day and the day most likely to be wet",
+              "Summarise the temperature, rain and wind trends across the week for ${location} using only this forecast data, naming the warmest day and the day most likely to be wet. Do not repeat the raw data. Forecast: " +
+              FORECAST_DATA_LINE,
             displayName: "Trend summary",
             tone: "professional",
             length: "medium",
@@ -429,7 +434,8 @@ export const sampleTemplates: SampleTemplate[] = [
           instructionType: "list",
           config: {
             description:
-              "Three practical recommendations for the week in ${location} drawn from the trends in the data table above, such as which day best suits outdoor plans",
+              "Three practical recommendations for the week in ${location} drawn from the trends in this forecast data, such as which day best suits outdoor plans. Forecast: " +
+              FORECAST_DATA_LINE,
             displayName: "Recommendations",
             format: "bullet_points",
             itemCount: 3,
