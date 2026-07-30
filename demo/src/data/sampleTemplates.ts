@@ -1,4 +1,5 @@
-import type { ItsTemplate } from "its-template-editor";
+﻿import type { ItsTemplate, JsonStructure } from "its-template-editor";
+import { serialiseJsonStructure } from "its-template-editor";
 import { BASE_SCHEMA_URL, HTML_TYPES_URL, JSON_TYPES_URL, STANDARD_TYPES_URL, YAML_TYPES_URL } from "./instructionTypes";
 
 export interface SampleTemplate {
@@ -6,6 +7,73 @@ export interface SampleTemplate {
   label: string;
   template: ItsTemplate;
 }
+
+/**
+ * The API response sample is a pure one-shot JSON template: its content is a
+ * single JSON structure, so the compiled prompt asks the model to return the
+ * completed raw JSON document and nothing else. Built through the editor's
+ * JSON structure serialiser with a stable group id so it opens in the
+ * interactive builder.
+ */
+const apiResponseStructure: JsonStructure = {
+  kind: "object",
+  entries: [
+    { kind: "property", name: "resource", value: { kind: "literal", value: "${resource.name}" } },
+    { kind: "property", name: "apiVersion", value: { kind: "literal", value: "${api.version}" } },
+    {
+      kind: "property",
+      name: "data",
+      value: {
+        kind: "array",
+        entries: [
+          {
+            kind: "generatedItems",
+            description:
+              "three ${resource.name} objects, each with a ${resource.idField} string, a status string and a total number",
+            itemType: "object",
+            itemCount: 3,
+          },
+        ],
+      },
+    },
+    { kind: "property", name: "page", value: { kind: "literal", value: 1 } },
+    { kind: "property", name: "pageSize", value: { kind: "literal", value: 20 } },
+    {
+      kind: "property",
+      name: "total",
+      value: {
+        kind: "generated",
+        type: "json_number",
+        description: "a plausible total count of ${resource.name} across all pages",
+        numberType: "integer",
+      },
+    },
+    {
+      kind: "property",
+      name: "summary",
+      value: {
+        kind: "generated",
+        type: "json_string",
+        description: "a one-line summary of the ${resource.name} collection",
+      },
+    },
+    {
+      kind: "property",
+      name: "meta",
+      value: {
+        kind: "object",
+        entries: [
+          {
+            kind: "property",
+            name: "generatedAt",
+            value: { kind: "generated", type: "json_string", description: "a plausible ISO 8601 timestamp" },
+          },
+          { kind: "generatedFields", description: "two additional pagination metadata fields", fieldCount: 2 },
+        ],
+      },
+    },
+  ],
+};
 
 export const sampleTemplates: SampleTemplate[] = [
   {
@@ -297,102 +365,22 @@ export const sampleTemplates: SampleTemplate[] = [
   },
   {
     id: "api-response",
-    label: "API response docs (JSON types)",
+    label: "One-shot JSON response (JSON types)",
     template: {
       $schema: BASE_SCHEMA_URL,
       version: "1.0.0",
       extends: [JSON_TYPES_URL],
       metadata: {
-        name: "API response documentation",
+        name: "One-shot JSON API response",
         description:
-          "Documents a REST endpoint whose example response JSON is authored literally in the template, with JSON type placeholders filling the values.",
+          "A JSON structure built interactively in the editor. The compiled prompt returns the completed raw JSON document and nothing else.",
         author: "ITS Template Studio",
       },
       variables: {
         api: { baseUrl: "https://api.example.com/v2", version: "2.4.0" },
         resource: { name: "orders", idField: "orderId" },
-        includeErrorExample: true,
       },
-      content: [
-        {
-          type: "text",
-          text: '# ${resource.name} API (v${api.version})\n\n## GET ${api.baseUrl}/${resource.name}\n\nReturns a paginated collection of ${resource.name}.\n\n### Example response\n\n{\n  "data": [\n',
-          id: "t-endpoint-heading",
-        },
-        {
-          type: "placeholder",
-          id: "p-data-items",
-          instructionType: "json_array_items",
-          config: {
-            description:
-              "three ${resource.name} objects, each with a ${resource.idField} string, a status string and a total number",
-            displayName: "Data items",
-            itemType: "object",
-            itemCount: 3,
-          },
-        },
-        {
-          type: "text",
-          text: '\n  ],\n  "page": 1,\n  "pageSize": 20,\n  "total": ',
-          id: "t-pagination",
-        },
-        {
-          type: "placeholder",
-          id: "p-total-count",
-          instructionType: "json_number",
-          config: {
-            description: "a plausible total count of ${resource.name} across all pages",
-            displayName: "Total count",
-            numberType: "integer",
-          },
-        },
-        {
-          type: "text",
-          text: ',\n  "summary": ',
-          id: "t-summary-field",
-        },
-        {
-          type: "placeholder",
-          id: "p-summary-value",
-          instructionType: "json_value",
-          config: {
-            description: "a one-line summary string describing the ${resource.name} collection",
-            displayName: "Summary value",
-            valueType: "string",
-          },
-        },
-        {
-          type: "text",
-          text: "\n}",
-          id: "t-response-close",
-        },
-        {
-          type: "conditional",
-          id: "c-error-example",
-          condition: "includeErrorExample == true",
-          content: [
-            {
-              type: "text",
-              text: '\n\n### Error response\n\nReturned with HTTP status 404 when the resource does not exist.\n\n{\n  "error": {\n    "code": "not_found",\n    "message": ',
-              id: "t-error-open",
-            },
-            {
-              type: "placeholder",
-              id: "p-error-message",
-              instructionType: "json_string",
-              config: {
-                description: "a human-readable message about a missing ${resource.name} resource",
-                displayName: "Error message",
-              },
-            },
-            {
-              type: "text",
-              text: "\n  }\n}",
-              id: "t-error-close",
-            },
-          ],
-        },
-      ],
+      content: serialiseJsonStructure(apiResponseStructure, "apiresponse"),
     },
   },
   {
