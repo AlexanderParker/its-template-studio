@@ -25,7 +25,7 @@ Open the printed URL. The browser engine works immediately; the server engine ne
 
 - **WYSIWYG editing** of text blocks, instruction placeholders and conditionals (with else branches and nesting), plus variables, metadata and a two-way JSON source view.
 - **All published type libraries in the palette**: the standard (prose) types plus the JSON, HTML and YAML structured-output libraries, fetched live with bundled fallbacks merged in a stable order.
-- **Sample templates**: product launch copy, a blog post brief and a project README on the standard types, plus API response documentation (JSON types), a CI pipeline configuration (YAML types) and an HTML product card fragment (HTML types).
+- **Sample templates**: product launch copy, a blog post brief and a project README on the standard types, plus three structured-output samples (API response docs with JSON types, a CI pipeline with YAML types, an HTML product card with HTML types) whose template text authors the target document's structure verbatim, with placeholders filling only the generated value positions.
 - **Sample datasets**: variable sets injected at compile time, overriding template defaults exactly as a `--variables` file would with the CLI compilers.
 - **Import / export**: templates round-trip as standard ITS JSON files.
 - **Two compile engines**:
