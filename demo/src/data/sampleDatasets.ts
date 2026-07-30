@@ -89,6 +89,42 @@ export const sampleDatasets: SampleDataset[] = [
     },
   },
   {
+    id: "stormy-week",
+    label: "Wellington: storm front arriving",
+    templateIds: ["weekly-forecast"],
+    variables: {
+      location: "Wellington",
+      weekOf: "9 March 2026",
+      forecast: [
+        { day: "Monday", high: 18, low: 12, rainChancePct: 20, windKmh: 25, condition: "partly cloudy" },
+        { day: "Tuesday", high: 17, low: 11, rainChancePct: 40, windKmh: 35, condition: "increasing cloud" },
+        { day: "Wednesday", high: 15, low: 10, rainChancePct: 70, windKmh: 50, condition: "rain developing" },
+        { day: "Thursday", high: 13, low: 9, rainChancePct: 90, windKmh: 70, condition: "heavy rain" },
+        { day: "Friday", high: 12, low: 8, rainChancePct: 95, windKmh: 85, condition: "storm" },
+        { day: "Saturday", high: 13, low: 8, rainChancePct: 60, windKmh: 45, condition: "easing showers" },
+        { day: "Sunday", high: 15, low: 9, rainChancePct: 30, windKmh: 30, condition: "clearing" },
+      ],
+    },
+  },
+  {
+    id: "heatwave-week",
+    label: "Adelaide: building heatwave",
+    templateIds: ["weekly-forecast"],
+    variables: {
+      location: "Adelaide",
+      weekOf: "16 March 2026",
+      forecast: [
+        { day: "Monday", high: 29, low: 18, rainChancePct: 10, windKmh: 15, condition: "sunny" },
+        { day: "Tuesday", high: 32, low: 20, rainChancePct: 5, windKmh: 12, condition: "sunny" },
+        { day: "Wednesday", high: 35, low: 22, rainChancePct: 0, windKmh: 10, condition: "hot and sunny" },
+        { day: "Thursday", high: 38, low: 24, rainChancePct: 0, windKmh: 14, condition: "very hot" },
+        { day: "Friday", high: 41, low: 26, rainChancePct: 0, windKmh: 18, condition: "extreme heat" },
+        { day: "Saturday", high: 39, low: 25, rainChancePct: 10, windKmh: 25, condition: "hot, gusty change late" },
+        { day: "Sunday", high: 27, low: 19, rainChancePct: 40, windKmh: 30, condition: "cool change, showers" },
+      ],
+    },
+  },
+  {
     id: "orders-api",
     label: "Orders API",
     templateIds: ["api-response"],
