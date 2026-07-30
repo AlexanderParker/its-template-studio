@@ -14,6 +14,14 @@ async function main(): Promise<void> {
       try {
         const result = await compile(template, dataset.variables);
         const hasPlaceholders = result.prompt.includes("<<");
+        if (sample.id === "api-response") {
+          // One-shot JSON sample: the TEMPLATE section must be exactly the
+          // JSON document scaffolding, nothing before or after it.
+          const templateSection = result.prompt.slice(result.prompt.indexOf("TEMPLATE") + "TEMPLATE".length).trim();
+          if (!templateSection.startsWith("{") || !templateSection.endsWith("}")) {
+            throw new Error("api-response template section is not a bare JSON document");
+          }
+        }
         console.log(
           `PASS ${sample.id} × ${dataset.id} (${result.prompt.length} chars, placeholders: ${hasPlaceholders})`,
         );

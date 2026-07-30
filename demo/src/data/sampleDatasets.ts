@@ -90,22 +90,20 @@ export const sampleDatasets: SampleDataset[] = [
   },
   {
     id: "orders-api",
-    label: "Orders API with error example",
+    label: "Orders API",
     templateIds: ["api-response"],
     variables: {
       api: { baseUrl: "https://api.example.com/v2", version: "2.4.0" },
       resource: { name: "orders", idField: "orderId" },
-      includeErrorExample: true,
     },
   },
   {
     id: "invoices-api",
-    label: "Invoices API, no error example",
+    label: "Invoices API",
     templateIds: ["api-response"],
     variables: {
       api: { baseUrl: "https://api.example.com/v3", version: "3.0.1" },
       resource: { name: "invoices", idField: "invoiceId" },
-      includeErrorExample: false,
     },
   },
   {
