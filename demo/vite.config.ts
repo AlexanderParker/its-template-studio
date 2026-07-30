@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       fs: fileURLToPath(new URL("./src/stubs/fs.ts", import.meta.url)),
+      path: fileURLToPath(new URL("./src/stubs/path.ts", import.meta.url)),
       url: fileURLToPath(new URL("./src/stubs/url.ts", import.meta.url)),
       "node-fetch": fileURLToPath(new URL("./src/stubs/node-fetch.ts", import.meta.url)),
       "its-template-editor/styles.css": fileURLToPath(

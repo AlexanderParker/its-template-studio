@@ -406,17 +406,13 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.111" },
-    { name = "its-compiler", specifier = ">=1.0.4" },
+    { name = "its-compiler", git = "https://github.com/AlexanderParker/its-compiler-python" },
 ]
 
 [[package]]
 name = "its-compiler"
-version = "1.0.4"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/a8/c5/628660fdc7476c604bbd5d4fb48d916fe44d95216f4b1cbe3e30120f67c4/its_compiler-1.0.4.tar.gz", hash = "sha256:3095bb7f2bddb57abf852be99f0ea814968b19916532724f6183b4f2b23a7a8c", size = 49629, upload-time = "2025-07-21T17:34:01.434Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/84/0a/00fc88fa160f9fad0bbf8cf8fbe5c5f3375f7106954cfd4d29a43155fc00/its_compiler-1.0.4-py3-none-any.whl", hash = "sha256:65475de3604dc173864f03bd1ac7bbd0c31cf3473e51f6d1ab8ba0936a6a12f4", size = 50819, upload-time = "2025-07-21T17:33:59.755Z" },
-]
+version = "1.2.0"
+source = { git = "https://github.com/AlexanderParker/its-compiler-python#04719d1ab5bcfb75c4178d005be82704b29a6149" }
 
 [[package]]
 name = "jinja2"

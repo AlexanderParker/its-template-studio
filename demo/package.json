@@ -12,7 +12,7 @@
     "check:schemas": "tsx scripts/check-bundled-schemas.ts"
   },
   "dependencies": {
-    "its-compiler-js": "^1.1.0",
+    "its-compiler-js": "github:AlexanderParker/its-compiler-js",
     "its-template-editor": "*",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"

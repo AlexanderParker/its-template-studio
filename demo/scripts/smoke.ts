@@ -14,6 +14,17 @@ async function main(): Promise<void> {
       try {
         const result = await compile(template, dataset.variables);
         const hasPlaceholders = result.prompt.includes("<<");
+        if (sample.id === "weekly-forecast") {
+          // Data-driven sample: the dataset must appear once as reference
+          // data above the template, never in the template body
+          if (!result.prompt.includes("REFERENCE DATA") || !result.prompt.includes("### forecast")) {
+            throw new Error("weekly-forecast prompt is missing the reference data section");
+          }
+          const templateSection = result.prompt.slice(result.prompt.indexOf("TEMPLATE"));
+          if (/\|\s*day\s*\|/.test(templateSection)) {
+            throw new Error("weekly-forecast template section leaks the reference data table");
+          }
+        }
         if (sample.id === "api-response") {
           // One-shot JSON sample: the TEMPLATE section must be exactly the
           // JSON document scaffolding, nothing before or after it.
