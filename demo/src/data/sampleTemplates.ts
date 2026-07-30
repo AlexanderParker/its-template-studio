@@ -304,7 +304,8 @@ export const sampleTemplates: SampleTemplate[] = [
       extends: [JSON_TYPES_URL],
       metadata: {
         name: "API response documentation",
-        description: "Documents a REST endpoint with generated JSON example responses, using the JSON type library.",
+        description:
+          "Documents a REST endpoint whose example response JSON is authored literally in the template, with JSON type placeholders filling the values.",
         author: "ITS Template Studio",
       },
       variables: {
@@ -315,35 +316,55 @@ export const sampleTemplates: SampleTemplate[] = [
       content: [
         {
           type: "text",
-          text: "# ${resource.name} API (v${api.version})\n\n## GET ${api.baseUrl}/${resource.name}\n\nReturns a paginated collection of ${resource.name}.\n\n### Example response\n\n",
+          text: '# ${resource.name} API (v${api.version})\n\n## GET ${api.baseUrl}/${resource.name}\n\nReturns a paginated collection of ${resource.name}.\n\n### Example response\n\n{\n  "data": [\n',
           id: "t-endpoint-heading",
         },
         {
           type: "placeholder",
-          id: "p-collection-response",
-          instructionType: "json_object",
+          id: "p-data-items",
+          instructionType: "json_array_items",
           config: {
             description:
-              "A paginated API response for ${resource.name} with a data array of three items keyed by ${resource.idField}, plus page, pageSize and total fields",
-            displayName: "Collection response",
-            indent: "two_spaces",
+              "three ${resource.name} objects, each with a ${resource.idField} string, a status string and a total number",
+            displayName: "Data items",
+            itemType: "object",
+            itemCount: 3,
           },
         },
         {
           type: "text",
-          text: "\n\n### Allowed status values\n\n",
-          id: "t-status-heading",
+          text: '\n  ],\n  "page": 1,\n  "pageSize": 20,\n  "total": ',
+          id: "t-pagination",
         },
         {
           type: "placeholder",
-          id: "p-status-values",
-          instructionType: "json_array",
+          id: "p-total-count",
+          instructionType: "json_number",
           config: {
-            description: "An array of five plausible status strings for ${resource.name}",
-            displayName: "Status values",
-            itemCount: 5,
-            indent: "compact",
+            description: "a plausible total count of ${resource.name} across all pages",
+            displayName: "Total count",
+            numberType: "integer",
           },
+        },
+        {
+          type: "text",
+          text: ',\n  "summary": ',
+          id: "t-summary-field",
+        },
+        {
+          type: "placeholder",
+          id: "p-summary-value",
+          instructionType: "json_value",
+          config: {
+            description: "a one-line summary string describing the ${resource.name} collection",
+            displayName: "Summary value",
+            valueType: "string",
+          },
+        },
+        {
+          type: "text",
+          text: "\n}",
+          id: "t-response-close",
         },
         {
           type: "conditional",
@@ -352,37 +373,24 @@ export const sampleTemplates: SampleTemplate[] = [
           content: [
             {
               type: "text",
-              text: "\n\n### Error response\n\nReturned with HTTP status 404 when the resource does not exist.\n\n",
-              id: "t-error-heading",
+              text: '\n\n### Error response\n\nReturned with HTTP status 404 when the resource does not exist.\n\n{\n  "error": {\n    "code": "not_found",\n    "message": ',
+              id: "t-error-open",
             },
             {
               type: "placeholder",
-              id: "p-error-response",
-              instructionType: "json_object",
+              id: "p-error-message",
+              instructionType: "json_string",
               config: {
-                description:
-                  "An error response object with error.code set to not_found and a human-readable error.message about a missing ${resource.name} resource",
-                displayName: "Error response",
-                indent: "two_spaces",
+                description: "a human-readable message about a missing ${resource.name} resource",
+                displayName: "Error message",
               },
             },
+            {
+              type: "text",
+              text: "\n  }\n}",
+              id: "t-error-close",
+            },
           ],
-        },
-        {
-          type: "text",
-          text: "\n\n### Response schema\n\n",
-          id: "t-schema-heading",
-        },
-        {
-          type: "placeholder",
-          id: "p-response-schema",
-          instructionType: "json_schema",
-          config: {
-            description: "A JSON Schema describing the paginated ${resource.name} response above",
-            displayName: "Response schema",
-            draft: "2020-12",
-            indent: "two_spaces",
-          },
         },
       ],
     },
@@ -396,7 +404,8 @@ export const sampleTemplates: SampleTemplate[] = [
       extends: [YAML_TYPES_URL],
       metadata: {
         name: "CI pipeline configuration",
-        description: "Generates a CI pipeline document with an optional deploy stage, using the YAML type library.",
+        description:
+          "A CI pipeline whose YAML structure is authored literally in the template, with YAML type placeholders filling the values.",
         author: "ITS Template Studio",
       },
       variables: {
@@ -406,19 +415,47 @@ export const sampleTemplates: SampleTemplate[] = [
       content: [
         {
           type: "text",
-          text: "# CI configuration for ${project.name}\n# Repository: ${project.repository}\n\n",
+          text: "# CI configuration for ${project.name}\n# Repository: ${project.repository}\n\nimage: ",
           id: "t-header-comment",
         },
         {
           type: "placeholder",
-          id: "p-pipeline-document",
-          instructionType: "yaml_document",
+          id: "p-build-image",
+          instructionType: "yaml_value",
           config: {
-            description:
-              "A CI pipeline for the ${project.language} project ${project.name} with build and test jobs, caching dependencies between runs",
-            displayName: "Pipeline document",
-            indentSize: 2,
-            useAnchors: false,
+            description: "a suitable container image for a ${project.language} project",
+            displayName: "Build image",
+            valueType: "string",
+          },
+        },
+        {
+          type: "text",
+          text: "\n\nstages:\n  - build\n  - test\n\nbuild:\n  stage: build\n  script:\n",
+          id: "t-build-job",
+        },
+        {
+          type: "placeholder",
+          id: "p-build-script",
+          instructionType: "yaml_list_items",
+          config: {
+            description: "commands that install dependencies and build ${project.name}",
+            displayName: "Build script",
+            indentSpaces: 4,
+          },
+        },
+        {
+          type: "text",
+          text: "\n\ntest:\n  stage: test\n  script:\n",
+          id: "t-test-job",
+        },
+        {
+          type: "placeholder",
+          id: "p-test-script",
+          instructionType: "yaml_list_items",
+          config: {
+            description: "commands that run the ${project.name} test suite",
+            displayName: "Test script",
+            indentSpaces: 4,
           },
         },
         {
@@ -428,35 +465,20 @@ export const sampleTemplates: SampleTemplate[] = [
           content: [
             {
               type: "text",
-              text: "\n\n# Deploy stage, appended to the jobs mapping above\n\n",
-              id: "t-deploy-comment",
+              text: "\n\ndeploy:\n  stage: deploy\n  only:\n    - main\n",
+              id: "t-deploy-open",
             },
             {
               type: "placeholder",
-              id: "p-deploy-stage",
+              id: "p-deploy-fields",
               instructionType: "yaml_block",
               config: {
-                description: "A deploy job for ${project.name} that runs only on the main branch and depends on the test job",
-                displayName: "Deploy stage",
-                indentSize: 2,
+                description: "the remaining fields of a deploy job for ${project.name} that depends on the test job",
+                displayName: "Deploy job fields",
+                indentSpaces: 2,
               },
             },
           ],
-        },
-        {
-          type: "text",
-          text: "\n\n# Frontmatter for the pipeline documentation page\n\n",
-          id: "t-frontmatter-comment",
-        },
-        {
-          type: "placeholder",
-          id: "p-frontmatter",
-          instructionType: "yaml_frontmatter",
-          config: {
-            description: "Frontmatter for a docs page about the ${project.name} pipeline with title, description and tags fields",
-            displayName: "Docs frontmatter",
-            fieldCount: 3,
-          },
         },
       ],
     },
@@ -470,7 +492,8 @@ export const sampleTemplates: SampleTemplate[] = [
       extends: [HTML_TYPES_URL],
       metadata: {
         name: "Product card fragment",
-        description: "Builds an HTML product card fragment that slots into surrounding markup, using the HTML type library.",
+        description:
+          "An HTML product card whose markup is authored literally in the template, with HTML type placeholders filling text, items and rows.",
         author: "ITS Template Studio",
       },
       variables: {
@@ -481,35 +504,38 @@ export const sampleTemplates: SampleTemplate[] = [
       content: [
         {
           type: "text",
-          text: '<section class="product-card">\n  <h2><a href="${product.url}">${product.name}</a></h2>\n\n',
+          text: '<section class="product-card">\n  <h2><a href="${product.url}">${product.name}</a></h2>\n  <p class="product-card__summary">',
           id: "t-card-open",
         },
         {
           type: "placeholder",
           id: "p-summary",
-          instructionType: "html_fragment",
+          instructionType: "html_text",
           config: {
-            description: "A short marketing summary of the ${product.name} as one paragraph element with a class attribute",
+            description: "a short marketing summary of the ${product.name}",
             displayName: "Product summary",
-            rootElement: "p",
-            includeClasses: true,
+            allowInlineMarkup: true,
           },
         },
         {
           type: "text",
-          text: "\n\n  <h3>Key features</h3>\n\n",
+          text: '</p>\n\n  <h3>Key features</h3>\n  <ul class="product-card__features">\n',
           id: "t-features-heading",
         },
         {
           type: "placeholder",
-          id: "p-features",
-          instructionType: "html_list",
+          id: "p-feature-items",
+          instructionType: "html_list_items",
           config: {
-            description: "Four key features of the ${product.name} focused on benefits for the buyer",
-            displayName: "Feature list",
-            listType: "unordered",
+            description: "four key features of the ${product.name} focused on benefits for the buyer",
+            displayName: "Feature items",
             itemCount: 4,
           },
+        },
+        {
+          type: "text",
+          text: "\n  </ul>\n",
+          id: "t-features-close",
         },
         {
           type: "conditional",
@@ -518,20 +544,24 @@ export const sampleTemplates: SampleTemplate[] = [
           content: [
             {
               type: "text",
-              text: "\n\n  <h3>Specifications</h3>\n\n",
-              id: "t-specs-heading",
+              text: '\n  <h3>Specifications</h3>\n  <table class="product-card__specs">\n    <thead>\n      <tr><th>Specification</th><th>Value</th></tr>\n    </thead>\n    <tbody>\n',
+              id: "t-specs-open",
             },
             {
               type: "placeholder",
-              id: "p-spec-table",
-              instructionType: "html_table",
+              id: "p-spec-rows",
+              instructionType: "html_table_rows",
               config: {
-                description:
-                  "A two-column specifications table for the ${product.name} listing dimensions, weight, battery life and materials",
-                displayName: "Specifications table",
+                description: "rows for the dimensions, weight, battery life and materials of the ${product.name}",
+                displayName: "Specification rows",
+                rows: 4,
                 columns: 2,
-                includeHeader: true,
               },
+            },
+            {
+              type: "text",
+              text: "\n    </tbody>\n  </table>\n",
+              id: "t-specs-close",
             },
           ],
         },
@@ -542,19 +572,24 @@ export const sampleTemplates: SampleTemplate[] = [
           content: [
             {
               type: "text",
-              text: "\n\n  <h3>Ask about this product</h3>\n\n",
-              id: "t-enquiry-heading",
+              text: '\n  <h3>Ask about this product</h3>\n  <div class="product-card__enquiry">\n',
+              id: "t-enquiry-open",
             },
             {
               type: "placeholder",
               id: "p-enquiry-fields",
               instructionType: "html_form_fields",
               config: {
-                description: "Name, email and message fields for an enquiry about the ${product.name}",
+                description: "name, email and message fields for an enquiry about the ${product.name}",
                 displayName: "Enquiry fields",
                 fieldCount: 3,
                 includeLabels: true,
               },
+            },
+            {
+              type: "text",
+              text: "\n  </div>\n",
+              id: "t-enquiry-close",
             },
           ],
         },
