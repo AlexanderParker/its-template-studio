@@ -7,3 +7,8 @@ dependencies = [
     "fastapi[standard]>=0.111",
     "its-compiler>=1.0.4",
 ]
+
+# Temporary until its-compiler 1.2.0 is on PyPI: resolve from git so the
+# deployed service has reference data support matching the browser engine.
+[tool.uv.sources]
+its-compiler = { git = "https://github.com/AlexanderParker/its-compiler-python" }

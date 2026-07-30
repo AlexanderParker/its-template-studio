@@ -15,21 +15,6 @@ export interface SampleTemplate {
  * JSON structure serialiser with a stable group id so it opens in the
  * interactive builder.
  */
-/**
- * The weekly forecast dataset rendered as one compact line of ${...}
- * references. It lives inside the placeholders' user prompts rather than in
- * template text, so the model reads the data but never reproduces it: text
- * elements are echoed verbatim into the output, while placeholder markers
- * (including their user prompts) are replaced entirely by generated content.
- */
-const FORECAST_DATA_LINE = [0, 1, 2, 3, 4, 5, 6]
-  .map(
-    (day) =>
-      `\${forecast[${day}].day} high \${forecast[${day}].high}C low \${forecast[${day}].low}C ` +
-      `rain \${forecast[${day}].rainChancePct}% wind \${forecast[${day}].windKmh}km/h \${forecast[${day}].condition}`,
-  )
-  .join("; ");
-
 const apiResponseStructure: JsonStructure = {
   kind: "object",
   entries: [
@@ -416,9 +401,9 @@ export const sampleTemplates: SampleTemplate[] = [
           instructionType: "paragraph",
           config: {
             description:
-              "Summarise the temperature, rain and wind trends across the week for ${location} using only this forecast data, naming the warmest day and the day most likely to be wet. Do not repeat the raw data. Forecast: " +
-              FORECAST_DATA_LINE,
+              "Summarise the temperature, rain and wind trends across the week for ${location} using only the forecast reference data, naming the warmest day and the day most likely to be wet",
             displayName: "Trend summary",
+            dataSource: "forecast",
             tone: "professional",
             length: "medium",
           },
@@ -434,9 +419,9 @@ export const sampleTemplates: SampleTemplate[] = [
           instructionType: "list",
           config: {
             description:
-              "Three practical recommendations for the week in ${location} drawn from the trends in this forecast data, such as which day best suits outdoor plans. Forecast: " +
-              FORECAST_DATA_LINE,
+              "Three practical recommendations for the week in ${location} drawn from the trends in the forecast reference data, such as which day best suits outdoor plans",
             displayName: "Recommendations",
+            dataSource: "forecast",
             format: "bullet_points",
             itemCount: 3,
           },
