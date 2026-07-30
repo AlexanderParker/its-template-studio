@@ -1,6 +1,8 @@
 # ITS Template Studio
 
-A WYSIWYG editor and compile playground for the [Instruction Template Specification (ITS)](https://alexanderparker.github.io/instruction-template-specification/). Build templates visually, inject sample variable datasets, and compile them to AI prompts using either [its-compiler-js](https://github.com/alexanderparker/its-compiler-js) in the browser or the Python [its-compiler](https://test.pypi.org/project/its-compiler/) via a bundled API.
+A WYSIWYG editor and compile playground for the [Instruction Template Specification (ITS)](https://alexanderparker.github.io/instruction-template-specification/). Build templates visually, inject sample variable datasets, and compile them to AI prompts using either [its-compiler-js](https://github.com/alexanderparker/its-compiler-js) in the browser or the Python [its-compiler](https://pypi.org/project/its-compiler/) via a bundled API.
+
+**Live demo:** https://alexanderparker.github.io/its-template-studio/
 
 ## Repository layout
 
