@@ -430,6 +430,80 @@ export const sampleTemplates: SampleTemplate[] = [
     },
   },
   {
+    id: "school-improvement",
+    label: "School improvement plan (multi-source)",
+    template: {
+      $schema: BASE_SCHEMA_URL,
+      version: "1.0.0",
+      extends: [STANDARD_TYPES_URL],
+      metadata: {
+        name: "School improvement plan",
+        description:
+          "Synthesises three datasets - exam results, attendance and a student survey - into a situation summary and prioritised recommendations. Each placeholder references all three sources.",
+        author: "ITS Template Studio",
+      },
+      variables: {
+        school: { name: "Riverbank Secondary College", year: "2027" },
+        examResults: [
+          { subject: "Mathematics", averageScore: 58, passRatePct: 71, changePct: -6 },
+          { subject: "English", averageScore: 67, passRatePct: 84, changePct: 1 },
+          { subject: "Science", averageScore: 62, passRatePct: 78, changePct: -2 },
+          { subject: "History", averageScore: 70, passRatePct: 88, changePct: 3 },
+        ],
+        attendance: [
+          { term: "Term 1", attendancePct: 92, chronicAbsencePct: 6 },
+          { term: "Term 2", attendancePct: 89, chronicAbsencePct: 9 },
+          { term: "Term 3", attendancePct: 86, chronicAbsencePct: 12 },
+          { term: "Term 4", attendancePct: 84, chronicAbsencePct: 14 },
+        ],
+        surveyResults: [
+          { statement: "I get help when I fall behind", agreePct: 54 },
+          { statement: "Homework expectations are clear", agreePct: 61 },
+          { statement: "I feel safe at school", agreePct: 88 },
+          { statement: "Lessons keep me engaged", agreePct: 57 },
+        ],
+      },
+      content: [
+        {
+          type: "text",
+          text: "# Improvement plan: ${school.name}\n\nPrepared for the ${school.year} school year.\n\n## Where we are\n\n",
+          id: "t-plan-heading",
+        },
+        {
+          type: "placeholder",
+          id: "p-situation",
+          instructionType: "paragraph",
+          config: {
+            description:
+              "Summarise ${school.name}'s current position by connecting the examResults, attendance and surveyResults reference data, for example linking declining subjects to the attendance trend and survey signals",
+            displayName: "Situation summary",
+            dataSource: ["examResults", "attendance", "surveyResults"],
+            tone: "professional",
+            length: "medium",
+          },
+        },
+        {
+          type: "text",
+          text: "\n\n## Recommendations\n\n",
+          id: "t-recommendations-heading",
+        },
+        {
+          type: "placeholder",
+          id: "p-recommendations",
+          instructionType: "list",
+          config: {
+            description:
+              "Five prioritised recommendations for ${school.name} to improve exam results in ${school.year}, each grounded in a specific figure from the examResults, attendance or surveyResults reference data",
+            displayName: "Recommendations",
+            dataSource: ["examResults", "attendance", "surveyResults"],
+            format: "numbered",
+            itemCount: 5,
+          },
+        },
+      ],
+    },
+  },
+  {
     id: "api-response",
     label: "One-shot JSON response (JSON types)",
     template: {
