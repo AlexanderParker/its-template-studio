@@ -412,7 +412,7 @@ requires-dist = [
 [[package]]
 name = "its-compiler"
 version = "1.2.0"
-source = { git = "https://github.com/AlexanderParker/its-compiler-python#8411c102ae2165354c71546cdae65a352f74cef2" }
+source = { git = "https://github.com/AlexanderParker/its-compiler-python#706b3b4cd408f51f6b3fdf340e0cf9a2a7461545" }
 
 [[package]]
 name = "jinja2"

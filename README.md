@@ -77,6 +77,7 @@ Environment variables on the service:
 
 - `ITS_CORS_ORIGINS` (optional): comma-separated allowed origins. The default in `app.py` covers the Pages origin (`https://alexanderparker.github.io`) and localhost dev ports. The demo's compile request is a JSON POST, which triggers a CORS preflight; the middleware answers the OPTIONS request.
 - `ITS_INTERACTIVE_ALLOWLIST=false`: the compiler never prompts on the headless server (the published schema URLs are trusted by its built-in patterns regardless).
+- `ITS_MAX_VARIABLE_COUNT=50000`, `ITS_MAX_VARIABLE_ARRAY_ITEMS=10000`, `ITS_MAX_TEXT_LENGTH=50000`: raised processing limits so large reference datasets compile; all compiler limits are operator-configurable.
 
 ### Demo (GitHub Pages)
 
