@@ -364,6 +364,81 @@ export const sampleTemplates: SampleTemplate[] = [
     },
   },
   {
+    id: "weekly-forecast",
+    label: "Weekly forecast summary (data-driven)",
+    template: {
+      $schema: BASE_SCHEMA_URL,
+      version: "1.0.0",
+      extends: [STANDARD_TYPES_URL],
+      metadata: {
+        name: "Weekly forecast summary",
+        description:
+          "Injects a week of forecast data as variables, renders it as a literal table the model can read, and generates trend-aware summaries from it. Swap datasets to change the story.",
+        author: "ITS Template Studio",
+      },
+      variables: {
+        location: "Sydney",
+        weekOf: "2 March 2026",
+        forecast: [
+          { day: "Monday", high: 24, low: 17, rainChancePct: 60, windKmh: 22, condition: "showers" },
+          { day: "Tuesday", high: 25, low: 17, rainChancePct: 40, windKmh: 18, condition: "partly cloudy" },
+          { day: "Wednesday", high: 27, low: 18, rainChancePct: 20, windKmh: 14, condition: "mostly sunny" },
+          { day: "Thursday", high: 28, low: 19, rainChancePct: 10, windKmh: 12, condition: "sunny" },
+          { day: "Friday", high: 30, low: 20, rainChancePct: 5, windKmh: 10, condition: "sunny" },
+          { day: "Saturday", high: 31, low: 21, rainChancePct: 5, windKmh: 15, condition: "sunny" },
+          { day: "Sunday", high: 29, low: 20, rainChancePct: 30, windKmh: 20, condition: "late change" },
+        ],
+      },
+      content: [
+        {
+          type: "text",
+          text:
+            "# Weekly weather briefing: ${location}\n\nWeek of ${weekOf}. Data for ${forecast.length} days.\n\n" +
+            "| Day | High (C) | Low (C) | Rain % | Wind km/h | Conditions |\n" +
+            "| --- | --- | --- | --- | --- | --- |\n" +
+            "| ${forecast[0].day} | ${forecast[0].high} | ${forecast[0].low} | ${forecast[0].rainChancePct} | ${forecast[0].windKmh} | ${forecast[0].condition} |\n" +
+            "| ${forecast[1].day} | ${forecast[1].high} | ${forecast[1].low} | ${forecast[1].rainChancePct} | ${forecast[1].windKmh} | ${forecast[1].condition} |\n" +
+            "| ${forecast[2].day} | ${forecast[2].high} | ${forecast[2].low} | ${forecast[2].rainChancePct} | ${forecast[2].windKmh} | ${forecast[2].condition} |\n" +
+            "| ${forecast[3].day} | ${forecast[3].high} | ${forecast[3].low} | ${forecast[3].rainChancePct} | ${forecast[3].windKmh} | ${forecast[3].condition} |\n" +
+            "| ${forecast[4].day} | ${forecast[4].high} | ${forecast[4].low} | ${forecast[4].rainChancePct} | ${forecast[4].windKmh} | ${forecast[4].condition} |\n" +
+            "| ${forecast[5].day} | ${forecast[5].high} | ${forecast[5].low} | ${forecast[5].rainChancePct} | ${forecast[5].windKmh} | ${forecast[5].condition} |\n" +
+            "| ${forecast[6].day} | ${forecast[6].high} | ${forecast[6].low} | ${forecast[6].rainChancePct} | ${forecast[6].windKmh} | ${forecast[6].condition} |\n" +
+            "\n## Trend summary\n\n",
+          id: "t-forecast-table",
+        },
+        {
+          type: "placeholder",
+          id: "p-trend-summary",
+          instructionType: "paragraph",
+          config: {
+            description:
+              "Summarise the temperature, rain and wind trends across the week for ${location} using only the data in the table above, naming the warmest day and the day most likely to be wet",
+            displayName: "Trend summary",
+            tone: "professional",
+            length: "medium",
+          },
+        },
+        {
+          type: "text",
+          text: "\n\n## What to plan for\n\n",
+          id: "t-plan-heading",
+        },
+        {
+          type: "placeholder",
+          id: "p-recommendations",
+          instructionType: "list",
+          config: {
+            description:
+              "Three practical recommendations for the week in ${location} drawn from the trends in the data table above, such as which day best suits outdoor plans",
+            displayName: "Recommendations",
+            format: "bullet_points",
+            itemCount: 3,
+          },
+        },
+      ],
+    },
+  },
+  {
     id: "api-response",
     label: "One-shot JSON response (JSON types)",
     template: {
