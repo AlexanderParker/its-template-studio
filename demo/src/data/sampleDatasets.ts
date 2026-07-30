@@ -125,6 +125,32 @@ export const sampleDatasets: SampleDataset[] = [
     },
   },
   {
+    id: "hilltop-primary",
+    label: "Hilltop Primary: strong attendance, maths gap",
+    templateIds: ["school-improvement"],
+    variables: {
+      school: { name: "Hilltop Primary School", year: "2027" },
+      examResults: [
+        { subject: "Mathematics", averageScore: 52, passRatePct: 63, changePct: -9 },
+        { subject: "English", averageScore: 74, passRatePct: 91, changePct: 4 },
+        { subject: "Science", averageScore: 69, passRatePct: 85, changePct: 2 },
+        { subject: "Art", averageScore: 81, passRatePct: 96, changePct: 5 },
+      ],
+      attendance: [
+        { term: "Term 1", attendancePct: 95, chronicAbsencePct: 3 },
+        { term: "Term 2", attendancePct: 94, chronicAbsencePct: 4 },
+        { term: "Term 3", attendancePct: 95, chronicAbsencePct: 3 },
+        { term: "Term 4", attendancePct: 93, chronicAbsencePct: 4 },
+      ],
+      surveyResults: [
+        { statement: "I get help when I fall behind", agreePct: 78 },
+        { statement: "Maths lessons make sense to me", agreePct: 41 },
+        { statement: "I feel safe at school", agreePct: 93 },
+        { statement: "Lessons keep me engaged", agreePct: 75 },
+      ],
+    },
+  },
+  {
     id: "orders-api",
     label: "Orders API",
     templateIds: ["api-response"],
