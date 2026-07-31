@@ -129,8 +129,18 @@ export const sampleTemplates: SampleTemplate[] = [
         },
         {
           type: "text",
-          text: "\n\n## Key features\n\n",
+          text: "\n\n",
+          id: "t-gap-2",
+        },
+        {
+          type: "text",
+          text: "## Key features",
           id: "t-features-heading",
+        },
+        {
+          type: "text",
+          text: "\n\n",
+          id: "t-gap-3",
         },
         {
           type: "placeholder",
@@ -150,8 +160,18 @@ export const sampleTemplates: SampleTemplate[] = [
           content: [
             {
               type: "text",
-              text: "\n\n## Specifications\n\n",
+              text: "\n\n",
+              id: "t-gap-4",
+            },
+            {
+              type: "text",
+              text: "## Specifications",
               id: "t-specs-heading",
+            },
+            {
+              type: "text",
+              text: "\n\n",
+              id: "t-gap-5",
             },
             {
               type: "placeholder",
