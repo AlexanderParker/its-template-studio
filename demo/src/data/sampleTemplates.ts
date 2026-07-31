@@ -392,7 +392,9 @@ export const sampleTemplates: SampleTemplate[] = [
       content: [
         {
           type: "text",
-          text: "# Weekly weather briefing: ${location}\n\nWeek of ${weekOf}.\n\n## Trend summary\n\n",
+          text:
+            "# Weekly weather briefing: ${location}\n\nWeek of ${weekOf}. Covering ${forecast.concat(day)} " +
+            "(${forecast.length} days, peak ${forecast.max(high)}C, minimum overnight ${forecast.min(low)}C).\n\n## Trend summary\n\n",
           id: "t-report-heading",
         },
         {
