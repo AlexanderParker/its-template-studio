@@ -23,7 +23,12 @@ export function OutputPanel({ outcome, compiling }: OutputPanelProps): JSX.Eleme
         <h2>Compiled prompt</h2>
         {outcome && (
           <span className={outcome.ok ? "output__status output__status--ok" : "output__status output__status--error"}>
-            {outcome.engine === "browser" ? "its-compiler-js" : "its-compiler (Python)"} ·{" "}
+            {outcome.engine === "browser"
+              ? "its-compiler-js"
+              : outcome.engine === "dotnet"
+                ? "Its.Compiler (.NET)"
+                : "its-compiler (Python)"}{" "}
+            ·{" "}
             {outcome.durationMs.toFixed(0)} ms
           </span>
         )}

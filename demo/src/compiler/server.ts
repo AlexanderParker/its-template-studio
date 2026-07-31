@@ -16,12 +16,21 @@ interface ServerCompileResponse {
 // origin.
 export const DEFAULT_SERVER_URL = import.meta.env.VITE_ITS_API_URL ?? "/its-api";
 
+// The .NET compile service exposes the same contract; in development the
+// dev server proxies /its-dotnet-api to a locally running instance.
+export const DEFAULT_DOTNET_URL = import.meta.env.VITE_ITS_DOTNET_API_URL ?? "/its-dotnet-api";
+
 export async function compileOnServer(
   serverUrl: string,
   template: ItsTemplate,
   variables: Record<string, JsonValue>,
+  engine: "server" | "dotnet" = "server",
 ): Promise<CompileOutcome> {
   const started = performance.now();
+  const startHint =
+    engine === "dotnet"
+      ? "Start it with: dotnet run --project samples/Its.Compiler.Service (see the its-compiler-dotnet repo)."
+      : "Start it with: uv run fastapi dev app.py --port 8402 (see server/README.md).";
   try {
     const response = await fetch(`${serverUrl.replace(/\/$/, "")}/compile`, {
       method: "POST",
@@ -36,7 +45,7 @@ export async function compileOnServer(
         warnings: body.warnings ?? [],
         error: body.error ?? `Server responded with HTTP ${response.status}`,
         durationMs: performance.now() - started,
-        engine: "server",
+        engine,
       };
     }
     return {
@@ -44,16 +53,16 @@ export async function compileOnServer(
       prompt: body.prompt,
       warnings: body.warnings ?? [],
       durationMs: performance.now() - started,
-      engine: "server",
+      engine,
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     return {
       ok: false,
       warnings: [],
-      error: `Could not reach the compile server at ${serverUrl}: ${message}. Start it with: uv run fastapi dev app.py --port 8402 (see server/README.md).`,
+      error: `Could not reach the compile server at ${serverUrl}: ${message}. ${startHint}`,
       durationMs: performance.now() - started,
-      engine: "server",
+      engine,
     };
   }
 }

@@ -8,7 +8,7 @@ export interface CompileOutcome {
   warnings: string[];
   error?: string;
   durationMs: number;
-  engine: "browser" | "server";
+  engine: "browser" | "server" | "dotnet";
 }
 
 /**

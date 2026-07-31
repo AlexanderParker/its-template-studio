@@ -32,6 +32,7 @@ jobs:
         run: npm run build
         env:
           VITE_ITS_API_URL: ${{ vars.VITE_ITS_API_URL }}
+          VITE_ITS_DOTNET_API_URL: ${{ vars.VITE_ITS_DOTNET_API_URL }}
 
       - name: Run smoke checks
         run: npm run smoke -w demo
