@@ -36,10 +36,44 @@ export const TYPE_LIBRARIES: TypeLibrary[] = [
 ];
 
 export interface LoadedInstructionTypes {
-  types: Record<string, InstructionTypeDefinition>;
+  /** Types per library id, so the palette can be scoped to a template's extends. */
+  perLibraryTypes: Record<string, Record<string, InstructionTypeDefinition>>;
   /** Overall source: live only if every library loaded live. */
   source: "live" | "bundled" | "mixed";
   perLibrary: Record<string, "live" | "bundled">;
+}
+
+/**
+ * Whether a template's extends list names this library. Matches the
+ * published URL exactly, or any entry ending with the library's filename so
+ * relative and locally mirrored extends still scope the palette correctly.
+ */
+export function libraryMatchesExtends(library: TypeLibrary, extendsList: string[]): boolean {
+  const filename = library.url.slice(library.url.lastIndexOf("/") + 1);
+  return extendsList.some(
+    (entry) => entry === library.url || entry === filename || entry.endsWith(`/${filename}`),
+  );
+}
+
+/**
+ * The palette for a template: only types from libraries the template
+ * extends. Types from the template's own customInstructionTypes are merged
+ * by the editor itself, so a template extending nothing still offers its
+ * custom types.
+ */
+export function paletteForExtends(
+  loaded: LoadedInstructionTypes | null,
+  extendsList: string[] | undefined,
+): Record<string, InstructionTypeDefinition> {
+  if (loaded === null) return {};
+  const list = extendsList ?? [];
+  const types: Record<string, InstructionTypeDefinition> = {};
+  for (const library of TYPE_LIBRARIES) {
+    if (libraryMatchesExtends(library, list)) {
+      Object.assign(types, loaded.perLibraryTypes[library.id] ?? {});
+    }
+  }
+  return types;
 }
 
 async function loadLibrary(library: TypeLibrary): Promise<{
@@ -68,14 +102,14 @@ async function loadLibrary(library: TypeLibrary): Promise<{
 export async function loadInstructionTypes(): Promise<LoadedInstructionTypes> {
   const results = await Promise.all(TYPE_LIBRARIES.map((library) => loadLibrary(library)));
 
-  const types: Record<string, InstructionTypeDefinition> = {};
+  const perLibraryTypes: Record<string, Record<string, InstructionTypeDefinition>> = {};
   const perLibrary: Record<string, "live" | "bundled"> = {};
   results.forEach((result, index) => {
-    Object.assign(types, result.types);
+    perLibraryTypes[TYPE_LIBRARIES[index].id] = result.types;
     perLibrary[TYPE_LIBRARIES[index].id] = result.source;
   });
 
   const sources = new Set(Object.values(perLibrary));
   const source = sources.size === 1 ? [...sources][0] : "mixed";
-  return { types, source, perLibrary };
+  return { perLibraryTypes, source, perLibrary };
 }
