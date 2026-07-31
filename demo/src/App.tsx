@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { InstructionTypeDefinition, ItsTemplate } from "its-template-editor";
+import type { ItsTemplate } from "its-template-editor";
 import { TemplateEditor } from "its-template-editor";
 import { compileInBrowser, type CompileOutcome } from "./compiler/browser";
 import { compileOnServer, DEFAULT_DOTNET_URL, DEFAULT_SERVER_URL } from "./compiler/server";
 import { exportTemplate, importTemplate } from "./compiler/io";
-import { loadInstructionTypes } from "./data/instructionTypes";
+import { loadInstructionTypes, paletteForExtends, type LoadedInstructionTypes } from "./data/instructionTypes";
 import { datasetsForTemplate, sampleDatasets } from "./data/sampleDatasets";
 import { sampleTemplates } from "./data/sampleTemplates";
 import { OutputPanel } from "./components/OutputPanel";
@@ -24,22 +24,29 @@ export function App(): JSX.Element {
   const [outcome, setOutcome] = useState<CompileOutcome | null>(null);
   const [compiling, setCompiling] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
-  const [paletteTypes, setPaletteTypes] = useState<Record<string, InstructionTypeDefinition>>({});
+  const [loadedTypes, setLoadedTypes] = useState<LoadedInstructionTypes | null>(null);
   const [paletteSource, setPaletteSource] = useState<"live" | "bundled" | "mixed" | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let cancelled = false;
-    void loadInstructionTypes().then(({ types, source }) => {
+    void loadInstructionTypes().then((loaded) => {
       if (!cancelled) {
-        setPaletteTypes(types);
-        setPaletteSource(source);
+        setLoadedTypes(loaded);
+        setPaletteSource(loaded.source);
       }
     });
     return () => {
       cancelled = true;
     };
   }, []);
+
+  // The palette only offers types from libraries this template extends;
+  // custom types declared in the template are merged by the editor itself
+  const paletteTypes = useMemo(
+    () => paletteForExtends(loadedTypes, template.extends),
+    [loadedTypes, template.extends],
+  );
 
   const datasets = useMemo(() => datasetsForTemplate(templateId), [templateId]);
   const activeDataset = sampleDatasets.find((dataset) => dataset.id === datasetId) ?? sampleDatasets[0];

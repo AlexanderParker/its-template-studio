@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "smoke": "tsx scripts/smoke.ts",
-    "check:schemas": "tsx scripts/check-bundled-schemas.ts"
+    "check:schemas": "tsx scripts/check-bundled-schemas.ts",
+    "test": "vitest run"
   },
   "dependencies": {
     "its-compiler-js": "github:AlexanderParker/its-compiler-js",
