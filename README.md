@@ -31,9 +31,10 @@ Open the printed URL. The browser engine works immediately; the server engine ne
 - **Sample templates**: product launch copy, a blog post brief and a project README on the standard types, plus three structured-output samples (API response docs with JSON types, a CI pipeline with YAML types, an HTML product card with HTML types) whose template text authors the target document's structure verbatim, with placeholders filling only the generated value positions.
 - **Sample datasets**: variable sets injected at compile time, overriding template defaults exactly as a `--variables` file would with the CLI compilers. The "Weekly forecast summary" sample shows data-driven generation and the "School improvement plan" sample shows multi-source synthesis (one placeholder referencing exam results, attendance and survey datasets at once): placeholders reference datasets by name (`dataSource: "forecast"` or an array of names), the compiler renders it once as a REFERENCE DATA table above the template that the model uses but never outputs, and swapping datasets changes the generated story. Requires its-compiler-js 1.3.0 and its-compiler 1.2.0; until those reach the registries, both engines resolve the compilers from git (see package.json and server/pyproject.toml).
 - **Import / export**: templates round-trip as standard ITS JSON files.
-- **Two compile engines**:
+- **Three compile engines**:
   - Browser: `its-compiler-js` bundled into the page. Remote `extends` schemas resolve over HTTPS from the browser; an "inline bundled type libraries" option substitutes bundled copies of any referenced library for offline use.
-  - Server: POSTs the template and variables through the dev proxy to the FastAPI service, which compiles with the Python reference implementation.
+  - Server (Python): POSTs the template and variables through the dev proxy to the FastAPI service, which compiles with the Python reference implementation.
+  - Server (.NET): the same contract served by `Its.Compiler.Service` from [its-compiler-dotnet](https://github.com/AlexanderParker/its-compiler-dotnet); in development the dev proxy forwards `/its-dotnet-api` to a local instance on port 8404 (`dotnet run --project samples/Its.Compiler.Service`).
 
 ## Server-side compiler
 
@@ -88,6 +89,8 @@ To point the site at a different compile service, update the repository variable
 ```bash
 gh variable set VITE_ITS_API_URL --body "https://your-service.example.com"
 ```
+
+The .NET engine works the same way through `VITE_ITS_DOTNET_API_URL`, currently `https://compile-server-dotnet-production.up.railway.app` (the `compile-server-dotnet` Railway service, deployed from the its-compiler-dotnet repo's Dockerfile with `railway up --service compile-server-dotnet`).
 
 ## Scripts
 

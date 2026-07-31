@@ -33,6 +33,11 @@ export default defineConfig(({ mode }) => ({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/its-api/, ""),
       },
+      "/its-dotnet-api": {
+        target: "http://localhost:8404",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/its-dotnet-api/, ""),
+      },
     },
   },
   preview: {
@@ -41,6 +46,11 @@ export default defineConfig(({ mode }) => ({
         target: "http://localhost:8402",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/its-api/, ""),
+      },
+      "/its-dotnet-api": {
+        target: "http://localhost:8404",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/its-dotnet-api/, ""),
       },
     },
   },

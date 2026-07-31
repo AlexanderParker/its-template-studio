@@ -2,14 +2,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { InstructionTypeDefinition, ItsTemplate } from "its-template-editor";
 import { TemplateEditor } from "its-template-editor";
 import { compileInBrowser, type CompileOutcome } from "./compiler/browser";
-import { compileOnServer, DEFAULT_SERVER_URL } from "./compiler/server";
+import { compileOnServer, DEFAULT_DOTNET_URL, DEFAULT_SERVER_URL } from "./compiler/server";
 import { exportTemplate, importTemplate } from "./compiler/io";
 import { loadInstructionTypes } from "./data/instructionTypes";
 import { datasetsForTemplate, sampleDatasets } from "./data/sampleDatasets";
 import { sampleTemplates } from "./data/sampleTemplates";
 import { OutputPanel } from "./components/OutputPanel";
 
-type Engine = "browser" | "server";
+type Engine = "browser" | "server" | "dotnet";
 
 export function App(): JSX.Element {
   const [template, setTemplate] = useState<ItsTemplate>(() =>
@@ -19,6 +19,7 @@ export function App(): JSX.Element {
   const [datasetId, setDatasetId] = useState("none");
   const [engine, setEngine] = useState<Engine>("browser");
   const [serverUrl, setServerUrl] = useState(DEFAULT_SERVER_URL);
+  const [dotnetUrl, setDotnetUrl] = useState(DEFAULT_DOTNET_URL);
   const [inlineTypes, setInlineTypes] = useState(false);
   const [outcome, setOutcome] = useState<CompileOutcome | null>(null);
   const [compiling, setCompiling] = useState(false);
@@ -72,7 +73,9 @@ export function App(): JSX.Element {
     const result =
       engine === "browser"
         ? await compileInBrowser(template, variables, { inlineTypes })
-        : await compileOnServer(serverUrl, template, variables);
+        : engine === "dotnet"
+          ? await compileOnServer(dotnetUrl, template, variables, "dotnet")
+          : await compileOnServer(serverUrl, template, variables);
     setOutcome(result);
     setCompiling(false);
   };
@@ -96,6 +99,9 @@ export function App(): JSX.Element {
           </a>
           <a href="https://github.com/alexanderparker/its-compiler-python" target="_blank" rel="noreferrer">
             Python compiler
+          </a>
+          <a href="https://github.com/alexanderparker/its-compiler-dotnet" target="_blank" rel="noreferrer">
+            .NET compiler
           </a>
         </div>
       </header>
@@ -181,8 +187,18 @@ export function App(): JSX.Element {
                   checked={engine === "server"}
                   onChange={() => setEngine("server")}
                 />
-                <span className="engine__name">Server</span>
-                <span className="engine__detail">its-compiler (Python) via the bundled API</span>
+                <span className="engine__name">Server (Python)</span>
+                <span className="engine__detail">its-compiler via the bundled API</span>
+              </label>
+              <label className={engine === "dotnet" ? "engine engine--active" : "engine"}>
+                <input
+                  type="radio"
+                  name="engine"
+                  checked={engine === "dotnet"}
+                  onChange={() => setEngine("dotnet")}
+                />
+                <span className="engine__name">Server (.NET)</span>
+                <span className="engine__detail">Its.Compiler via the bundled API</span>
               </label>
             </div>
 
@@ -206,6 +222,18 @@ export function App(): JSX.Element {
                   type="text"
                   value={serverUrl}
                   onChange={(event) => setServerUrl(event.target.value)}
+                  spellCheck={false}
+                />
+              </label>
+            )}
+
+            {engine === "dotnet" && (
+              <label className="panel__field">
+                <span>Server URL</span>
+                <input
+                  type="text"
+                  value={dotnetUrl}
+                  onChange={(event) => setDotnetUrl(event.target.value)}
                   spellCheck={false}
                 />
               </label>
