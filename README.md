@@ -1,16 +1,18 @@
 # ITS Template Studio
 
-A WYSIWYG editor and compile playground for the [Instruction Template Specification (ITS)](https://alexanderparker.github.io/instruction-template-specification/). Build templates visually, inject sample variable datasets, and compile them to AI prompts using either [its-compiler-js](https://github.com/alexanderparker/its-compiler-js) in the browser or the Python [its-compiler](https://pypi.org/project/its-compiler/) via a bundled API.
+A WYSIWYG editor and compile playground for the [Instruction Template Specification (ITS)](https://alexanderparker.github.io/instruction-template-specification/). Build templates visually, inject sample variable datasets, and compile them to AI prompts through three engines: [its-compiler-js](https://github.com/alexanderparker/its-compiler-js) in the browser, the Python [its-compiler](https://pypi.org/project/its-compiler/) service, or the .NET [Its.Compiler](https://github.com/AlexanderParker/its-compiler-dotnet) service.
 
 **Live demo:** https://alexanderparker.github.io/its-template-studio/
 
 ## Repository layout
 
 ```
-packages/its-editor/   its-template-editor: a decoupled, publishable React component
-demo/                  Vite + React demo app (browser-side compilation, samples, import/export)
+packages/its-editor/   its-template-editor: working mirror of the standalone its-wysiwyg-common repo
+demo/                  Vite + React demo app driving all three engines (samples, import/export)
 server/                FastAPI service wrapping the Python reference compiler
 ```
+
+The .NET compile service lives in the [its-compiler-dotnet](https://github.com/AlexanderParker/its-compiler-dotnet) repository.
 
 ## Quick start
 
@@ -21,15 +23,18 @@ npm install
 npm run dev
 ```
 
-Open the printed URL. The browser engine works immediately; the server engine needs the Python service running (see below).
+Open the printed URL. The browser engine works immediately; the server engines need their services running: the Python service locally on port 8402 (see below) and the .NET service on port 8404 (`dotnet run --project samples/Its.Compiler.Service` in its-compiler-dotnet).
 
 ## Demo features
 
-- **WYSIWYG editing** of text blocks, instruction placeholders and conditionals (with else branches and nesting), plus variables, metadata and a two-way JSON source view.
-- **JSON structure builder**: build a JSON response interactively - nested objects, arrays, fixed values and generated fills - and compile to a prompt whose one-shot response is the completed raw JSON document and nothing else (see the "One-shot JSON response" sample).
-- **All published type libraries in the palette**: the standard (prose) types plus the JSON, HTML and YAML structured-output libraries, fetched live with bundled fallbacks merged in a stable order.
-- **Sample templates**: product launch copy, a blog post brief and a project README on the standard types, plus three structured-output samples (API response docs with JSON types, a CI pipeline with YAML types, an HTML product card with HTML types) whose template text authors the target document's structure verbatim, with placeholders filling only the generated value positions.
-- **Sample datasets**: variable sets injected at compile time, overriding template defaults exactly as a `--variables` file would with the CLI compilers. The "Weekly forecast summary" sample shows data-driven generation and the "School improvement plan" sample shows multi-source synthesis (one placeholder referencing exam results, attendance and survey datasets at once): placeholders reference datasets by name (`dataSource: "forecast"` or an array of names), the compiler renders it once as a REFERENCE DATA table above the template that the model uses but never outputs, and swapping datasets changes the generated story. Requires its-compiler-js 1.3.0 and its-compiler 1.2.0; until those reach the registries, both engines resolve the compilers from git (see package.json and server/pyproject.toml).
+- **WYSIWYG editing** across five tabs: Content, Variables, Custom types, Metadata and a two-way JSON source view.
+- **Document-flow Content tab**: blocks lay out in document flow mirroring the compiled template - flowing monospace text, inline placeholder tokens matching the `<<...>>` markers with per-placeholder settings in a modal (gear icon), and if/else conditional rails.
+- **Schema-scoped palette**: the demo derives the placeholder palette from the template's `extends` references (`paletteForExtends` in `demo/src/data/instructionTypes.ts`), so only types from the libraries a template extends are offered; the editor's add menu hides the JSON structure option unless the palette provides the five JSON builder types.
+- **All published type libraries bundled**: the standard (prose) types plus the JSON, HTML and YAML structured-output libraries, fetched live with bundled fallbacks merged in a stable order.
+- **Right-click variable insertion**: an expandable tree of the template's variable paths (object properties, array indices, `.length`), collection-function submenus (`concat`/`sum`/`avg`/`min`/`max`/`top`), bare paths in condition fields, and an integer-filtered mode for numeric config fields.
+- **JSON structure builder**: build a JSON response interactively - nested objects, arrays, typed fixed values including null, and generated fills - and compile to a prompt whose one-shot response is the completed raw JSON document and nothing else (see the "One-shot JSON response" sample).
+- **Placeholder data sources**: placeholders reference datasets by name through the `dataSource` and `dataLimit` config keys, rendered by all three compilers as a REFERENCE DATA section above the template that the model uses but never outputs; object-valued `${refs}` also render as reference data. Requires its-compiler-js 1.3.0 and its-compiler 1.2.0; until those reach the registries, the browser and Python engines resolve their compilers from git (the its-compiler-js pin is in `demo/package.json`, the Python pin in `server/pyproject.toml`; note a fresh `npm install` of a `github:` dependency may fetch over SSH, so GitHub SSH access may be needed).
+- **Eight sample templates**, each with injectable datasets: product launch copy, blog post brief, project README, weekly forecast summary, school improvement plan, one-shot JSON response, CI pipeline config and product card fragment.
 - **Import / export**: templates round-trip as standard ITS JSON files.
 - **Three compile engines**:
   - Browser: `its-compiler-js` bundled into the page. Remote `extends` schemas resolve over HTTPS from the browser; an "inline bundled type libraries" option substitutes bundled copies of any referenced library for offline use.
@@ -45,11 +50,11 @@ cd server
 uv run fastapi dev app.py --port 8402
 ```
 
-uv creates the environment and installs dependencies from `pyproject.toml` on first run, with its-compiler pinned to TestPyPI. Then choose the Server engine in the demo; requests route through the Vite dev proxy (`/its-api`), so no cross-origin requests are involved. See `server/README.md` for endpoint details.
+uv creates the environment and installs dependencies from `pyproject.toml` on first run, with its-compiler pinned to git via `[tool.uv.sources]` in `server/pyproject.toml`. Then choose the Server engine in the demo; requests route through the Vite dev proxy (`/its-api`), so no cross-origin requests are involved. See `server/README.md` for endpoint details.
 
 ## The editor as a standalone component
 
-`packages/its-editor` contains `its-template-editor`, a controlled React component with no compiler or network dependencies; the demo consumes it from source through a Vite alias. To produce a publishable build:
+`packages/its-editor` contains `its-template-editor`, a controlled React component with no compiler or network dependencies; the demo consumes it from source through a Vite alias. The directory is a working mirror of the standalone [its-wysiwyg-common](https://github.com/AlexanderParker/its-wysiwyg-common) repository, which holds the publishable copy and the release workflow; the two are kept in sync manually. The npm package name is `its-template-editor` (currently 0.8.1, publication pending). To produce a publishable build:
 
 ```bash
 npm run build:editor
@@ -59,15 +64,15 @@ This emits ESM, CJS, type declarations and the stylesheet to `packages/its-edito
 
 ## How the browser build works
 
-`its-compiler-js` targets Node and imports `fs`, `url` and `node-fetch` at module scope. The demo aliases these to thin shims (`demo/src/stubs/`): `url` re-exports the native `URL`, `node-fetch` re-exports native `fetch`, and `fs` throws if touched, which only happens via `compileFile()`, never used by the demo. Everything else in the compiler (validation, variable processing, jsep-based conditional evaluation, schema loading over HTTPS) runs unmodified in the browser.
+`its-compiler-js` targets Node and imports `fs`, `path`, `url` and `node-fetch` at module scope. The demo aliases these four modules to thin shims (`demo/src/stubs/`): `url` re-exports the native `URL`, `path` provides minimal implementations, `node-fetch` wraps native `fetch` and strips request headers so schema fetches stay CORS-simple on static hosts (needed until its-compiler-js 1.3.0 is released with browser-safe headers), and `fs` throws if touched, which only happens via `compileFile()`, never used by the demo. Everything else in the compiler (validation, variable processing, jsep-based conditional evaluation, schema loading over HTTPS) runs unmodified in the browser.
 
 ## Deployment
 
-The demo is published on GitHub Pages with the compile service on Railway, so both engines work in production.
+The demo is published on GitHub Pages with the Python and .NET compile services on Railway, so all three engines work in production.
 
 ### Compile service (Railway)
 
-The Railway service deploys the `server/` directory: uv-based install driven by `pyproject.toml`/`uv.lock` (its-compiler resolves from PyPI), configured by `server/railway.json` (start command `uv run fastapi run app.py --port $PORT`, health check `/health`). To redeploy after changing the server:
+Two Railway services back the server engines: `compile-server` (this Python service) and `compile-server-dotnet` (deployed from the its-compiler-dotnet repository). The `compile-server` service deploys the `server/` directory: uv-based install driven by `pyproject.toml`/`uv.lock` (its-compiler resolves from git until the release reaches PyPI), configured by `server/railway.json` (start command `uv run fastapi run app.py --port $PORT`, health check `/health`). To redeploy after changing the server:
 
 ```bash
 cd server
@@ -82,7 +87,7 @@ Environment variables on the service:
 
 ### Demo (GitHub Pages)
 
-`.github/workflows/deploy-pages.yml` builds the demo on every push to main and deploys `demo/dist` to Pages (Actions source). The build reads the repository variable `VITE_ITS_API_URL`, which must be set to the Railway service URL (currently `https://compile-server-production-529e.up.railway.app`); it is baked into the bundle as the production server-engine URL. Locally the value is unset and the dev proxy (`/its-api`) is used instead. Vite's `base` is `/its-template-studio/` in production builds so assets resolve on the project Pages path.
+`.github/workflows/deploy-pages.yml` builds the demo on every push to main, runs the smoke script as a gate, and deploys `demo/dist` to Pages (Actions source). The build reads both repository variables `VITE_ITS_API_URL` (the Python service URL, currently `https://compile-server-production-529e.up.railway.app`) and `VITE_ITS_DOTNET_API_URL`; they are baked into the bundle as the production server-engine URLs. Locally the values are unset and the dev proxies (`/its-api`, `/its-dotnet-api`) are used instead. Vite's `base` is `/its-template-studio/` in production builds so assets resolve on the project Pages path.
 
 To point the site at a different compile service, update the repository variable and re-run the workflow:
 
@@ -100,7 +105,10 @@ The .NET engine works the same way through `VITE_ITS_DOTNET_API_URL`, currently 
 | `npm run build`        | Production build of the demo                                  |
 | `npm run build:editor` | Build the publishable editor package                          |
 | `npm run typecheck`    | Strict TypeScript checks across all workspaces                |
+| `npm test -w its-template-editor` | Run the editor package's vitest suites             |
+| `npm test -w demo`     | Run the demo's vitest unit suite (palette scoping)            |
 | `npm run smoke -w demo`| Compile every sample template with every applicable dataset   |
+| `npm run preview -w demo` | Serve the production build locally                         |
 | `npm run check:schemas -w demo` | Verify bundled type library copies are byte-identical to the published files (needs network) |
 
 ## ITS ecosystem
