@@ -694,12 +694,12 @@ export const sampleTemplates: SampleTemplate[] = [
         {
           type: "text",
           text: "| Issue | Severity | Summary |\n| --- | --- | --- |",
-          id: "t-md-table-head",
+          id: "mdt-relfixes-0",
         },
-        { type: "text", text: "\n", id: "t-md-br-5" },
+        { type: "text", text: "\n", id: "mdt-relfixes-1" },
         {
           type: "placeholder",
-          id: "p-md-fix-rows",
+          id: "mdt-relfixes-2",
           instructionType: "markdown_table_rows",
           config: {
             description: "plausible fixed issues for ${product} ${releaseVersion}",
@@ -711,11 +711,11 @@ export const sampleTemplates: SampleTemplate[] = [
         { type: "text", text: "\n\n", id: "t-md-br-6" },
         { type: "text", text: "## Upgrading", id: "t-md-upgrading" },
         { type: "text", text: "\n\n", id: "t-md-br-7" },
-        { type: "text", text: "```bash", id: "t-md-fence-open" },
-        { type: "text", text: "\n", id: "t-md-br-8" },
+        { type: "text", text: "```bash", id: "mdc-relupgrade-0" },
+        { type: "text", text: "\n", id: "mdc-relupgrade-1" },
         {
           type: "placeholder",
-          id: "p-md-upgrade-cmds",
+          id: "mdc-relupgrade-2",
           instructionType: "markdown_code",
           config: {
             description: "shell commands that upgrade ${product} to ${releaseVersion}",
@@ -723,8 +723,8 @@ export const sampleTemplates: SampleTemplate[] = [
             language: "bash",
           },
         },
-        { type: "text", text: "\n", id: "t-md-br-9" },
-        { type: "text", text: "```", id: "t-md-fence-close" },
+        { type: "text", text: "\n", id: "mdc-relupgrade-3" },
+        { type: "text", text: "```", id: "mdc-relupgrade-4" },
         {
           type: "conditional",
           id: "c-md-upgrade-notes",
