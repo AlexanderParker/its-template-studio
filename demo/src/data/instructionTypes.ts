@@ -3,6 +3,7 @@ import bundledStandardTypes from "./standard-types.json";
 import bundledJsonTypes from "./its-json-types-v1.json";
 import bundledHtmlTypes from "./its-html-types-v1.json";
 import bundledYamlTypes from "./its-yaml-types-v1.json";
+import bundledMarkdownTypes from "./its-markdown-types-v1.json";
 
 const SCHEMA_BASE_URL = "https://alexanderparker.github.io/instruction-template-specification/schema/v1.0";
 
@@ -11,6 +12,7 @@ export const STANDARD_TYPES_URL = `${SCHEMA_BASE_URL}/its-standard-types-v1.json
 export const JSON_TYPES_URL = `${SCHEMA_BASE_URL}/its-json-types-v1.json`;
 export const HTML_TYPES_URL = `${SCHEMA_BASE_URL}/its-html-types-v1.json`;
 export const YAML_TYPES_URL = `${SCHEMA_BASE_URL}/its-yaml-types-v1.json`;
+export const MARKDOWN_TYPES_URL = `${SCHEMA_BASE_URL}/its-markdown-types-v1.json`;
 
 interface TypeExtensionSchema {
   instructionTypes?: Record<string, InstructionTypeDefinition>;
@@ -33,6 +35,7 @@ export const TYPE_LIBRARIES: TypeLibrary[] = [
   { id: "json", label: "JSON types", url: JSON_TYPES_URL, bundled: bundledJsonTypes as TypeExtensionSchema },
   { id: "html", label: "HTML types", url: HTML_TYPES_URL, bundled: bundledHtmlTypes as TypeExtensionSchema },
   { id: "yaml", label: "YAML types", url: YAML_TYPES_URL, bundled: bundledYamlTypes as TypeExtensionSchema },
+  { id: "markdown", label: "Markdown types", url: MARKDOWN_TYPES_URL, bundled: bundledMarkdownTypes as TypeExtensionSchema },
 ];
 
 export interface LoadedInstructionTypes {

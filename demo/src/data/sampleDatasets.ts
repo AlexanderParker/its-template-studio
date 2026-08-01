@@ -206,6 +206,17 @@ export const sampleDatasets: SampleDataset[] = [
       includeEnquiryForm: true,
     },
   },
+  {
+    id: "billing-service-notes",
+    label: "Billing service 1.0.0, no upgrade notes",
+    templateIds: ["release-notes"],
+    variables: {
+      product: "billing-service",
+      releaseVersion: "1.0.0",
+      highlightCount: 3,
+      includeUpgradeNotes: false,
+    },
+  },
 ];
 
 export function datasetsForTemplate(templateId: string | null): SampleDataset[] {

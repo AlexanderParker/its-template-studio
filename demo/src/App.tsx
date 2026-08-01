@@ -4,7 +4,7 @@ import { TemplateEditor } from "its-template-editor";
 import { compileInBrowser, type CompileOutcome } from "./compiler/browser";
 import { compileOnServer, DEFAULT_DOTNET_URL, DEFAULT_SERVER_URL } from "./compiler/server";
 import { exportTemplate, importTemplate } from "./compiler/io";
-import { loadInstructionTypes, paletteForExtends, type LoadedInstructionTypes } from "./data/instructionTypes";
+import { TYPE_LIBRARIES, loadInstructionTypes, paletteForExtends, type LoadedInstructionTypes } from "./data/instructionTypes";
 import { datasetsForTemplate, sampleDatasets } from "./data/sampleDatasets";
 import { sampleTemplates } from "./data/sampleTemplates";
 import { OutputPanel } from "./components/OutputPanel";
@@ -21,6 +21,7 @@ export function App(): JSX.Element {
   const [serverUrl, setServerUrl] = useState(DEFAULT_SERVER_URL);
   const [dotnetUrl, setDotnetUrl] = useState(DEFAULT_DOTNET_URL);
   const [inlineTypes, setInlineTypes] = useState(false);
+  const [autoCompile, setAutoCompile] = useState(false);
   const [outcome, setOutcome] = useState<CompileOutcome | null>(null);
   const [compiling, setCompiling] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
@@ -46,6 +47,11 @@ export function App(): JSX.Element {
   const paletteTypes = useMemo(
     () => paletteForExtends(loadedTypes, template.extends),
     [loadedTypes, template.extends],
+  );
+
+  const schemaOptions = useMemo(
+    () => TYPE_LIBRARIES.map((library) => ({ label: library.label, url: library.url })),
+    [],
   );
 
   const datasets = useMemo(() => datasetsForTemplate(templateId), [templateId]);
@@ -86,6 +92,18 @@ export function App(): JSX.Element {
     setOutcome(result);
     setCompiling(false);
   };
+
+  // Auto-compile: with the browser engine, recompile shortly after any
+  // template change (watched via its JSON) or dataset switch
+  const templateJson = useMemo(() => JSON.stringify(template), [template]);
+  useEffect(() => {
+    if (!autoCompile || engine !== "browser") return;
+    const timer = window.setTimeout(() => {
+      void runCompile();
+    }, 400);
+    return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoCompile, engine, templateJson, datasetId, inlineTypes]);
 
   return (
     <div className="app">
@@ -210,16 +228,26 @@ export function App(): JSX.Element {
             </div>
 
             {engine === "browser" && (
-              <label className="panel__check">
-                <input
-                  type="checkbox"
-                  checked={inlineTypes}
-                  onChange={(event) => setInlineTypes(event.target.checked)}
-                />
-                <span>
-                  Inline bundled type libraries (skip fetching the schemas; useful offline)
-                </span>
-              </label>
+              <>
+                <label className="panel__check">
+                  <input
+                    type="checkbox"
+                    checked={inlineTypes}
+                    onChange={(event) => setInlineTypes(event.target.checked)}
+                  />
+                  <span>
+                    Inline bundled type libraries (skip fetching the schemas; useful offline)
+                  </span>
+                </label>
+                <label className="panel__check">
+                  <input
+                    type="checkbox"
+                    checked={autoCompile}
+                    onChange={(event) => setAutoCompile(event.target.checked)}
+                  />
+                  <span>Auto-compile on every template change</span>
+                </label>
+              </>
             )}
 
             {engine === "server" && (
@@ -261,7 +289,12 @@ export function App(): JSX.Element {
         </aside>
 
         <main className="editor-pane">
-          <TemplateEditor value={template} onChange={setTemplate} instructionTypes={paletteTypes} />
+          <TemplateEditor
+            value={template}
+            onChange={setTemplate}
+            instructionTypes={paletteTypes}
+            schemaOptions={schemaOptions}
+          />
         </main>
 
         <OutputPanel outcome={outcome} compiling={compiling} />

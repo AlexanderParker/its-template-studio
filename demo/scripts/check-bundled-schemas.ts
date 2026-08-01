@@ -7,7 +7,13 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { STANDARD_TYPES_URL, JSON_TYPES_URL, HTML_TYPES_URL, YAML_TYPES_URL } from "../src/data/instructionTypes";
+import {
+  STANDARD_TYPES_URL,
+  JSON_TYPES_URL,
+  HTML_TYPES_URL,
+  YAML_TYPES_URL,
+  MARKDOWN_TYPES_URL,
+} from "../src/data/instructionTypes";
 
 const DATA_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "src", "data");
 
@@ -16,6 +22,7 @@ const BUNDLED_FILES: Array<{ file: string; url: string }> = [
   { file: "its-json-types-v1.json", url: JSON_TYPES_URL },
   { file: "its-html-types-v1.json", url: HTML_TYPES_URL },
   { file: "its-yaml-types-v1.json", url: YAML_TYPES_URL },
+  { file: "its-markdown-types-v1.json", url: MARKDOWN_TYPES_URL },
 ];
 
 async function main(): Promise<void> {

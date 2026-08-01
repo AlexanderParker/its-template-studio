@@ -1,6 +1,6 @@
 ﻿import type { ItsTemplate, JsonStructure } from "its-template-editor";
 import { serialiseJsonStructure } from "its-template-editor";
-import { BASE_SCHEMA_URL, HTML_TYPES_URL, JSON_TYPES_URL, STANDARD_TYPES_URL, YAML_TYPES_URL } from "./instructionTypes";
+import { BASE_SCHEMA_URL, HTML_TYPES_URL, JSON_TYPES_URL, MARKDOWN_TYPES_URL, STANDARD_TYPES_URL, YAML_TYPES_URL } from "./instructionTypes";
 
 export interface SampleTemplate {
   id: string;
@@ -636,6 +636,109 @@ export const sampleTemplates: SampleTemplate[] = [
                 description: "the remaining fields of a deploy job for ${project.name} that depends on the test job",
                 displayName: "Deploy job fields",
                 indentSpaces: 2,
+              },
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: "release-notes",
+    label: "Release notes (Markdown types)",
+    template: {
+      $schema: BASE_SCHEMA_URL,
+      version: "1.0.0",
+      extends: [MARKDOWN_TYPES_URL],
+      metadata: {
+        name: "Release notes",
+        description:
+          "A Markdown release-notes document whose structure is authored literally, with Markdown type placeholders filling text, list items, table rows and code.",
+        author: "ITS Template Studio",
+      },
+      variables: {
+        product: "example-storefront",
+        releaseVersion: "2.4.0",
+        highlightCount: 4,
+        includeUpgradeNotes: true,
+      },
+      content: [
+        { type: "text", text: "# ${product} ${releaseVersion} - ", id: "t-md-title" },
+        {
+          type: "placeholder",
+          id: "p-md-tagline",
+          instructionType: "markdown_text",
+          config: {
+            description: "a short release tagline for ${product} ${releaseVersion}",
+            displayName: "Release tagline",
+            allowFormatting: false,
+          },
+        },
+        { type: "text", text: "\n\n", id: "t-md-br-1" },
+        { type: "text", text: "## Highlights", id: "t-md-highlights" },
+        { type: "text", text: "\n\n", id: "t-md-br-2" },
+        {
+          type: "placeholder",
+          id: "p-md-highlight-items",
+          instructionType: "markdown_list_items",
+          config: {
+            description: "the ${highlightCount} most important improvements in ${product} ${releaseVersion}",
+            displayName: "Highlight list",
+            listType: "bullet",
+            itemCount: "${highlightCount}",
+          },
+        },
+        { type: "text", text: "\n\n", id: "t-md-br-3" },
+        { type: "text", text: "## Fixed issues", id: "t-md-fixes" },
+        { type: "text", text: "\n\n", id: "t-md-br-4" },
+        {
+          type: "text",
+          text: "| Issue | Severity | Summary |\n| --- | --- | --- |",
+          id: "t-md-table-head",
+        },
+        { type: "text", text: "\n", id: "t-md-br-5" },
+        {
+          type: "placeholder",
+          id: "p-md-fix-rows",
+          instructionType: "markdown_table_rows",
+          config: {
+            description: "plausible fixed issues for ${product} ${releaseVersion}",
+            displayName: "Fixed issue rows",
+            rows: 3,
+            columns: 3,
+          },
+        },
+        { type: "text", text: "\n\n", id: "t-md-br-6" },
+        { type: "text", text: "## Upgrading", id: "t-md-upgrading" },
+        { type: "text", text: "\n\n", id: "t-md-br-7" },
+        { type: "text", text: "```bash", id: "t-md-fence-open" },
+        { type: "text", text: "\n", id: "t-md-br-8" },
+        {
+          type: "placeholder",
+          id: "p-md-upgrade-cmds",
+          instructionType: "markdown_code",
+          config: {
+            description: "shell commands that upgrade ${product} to ${releaseVersion}",
+            displayName: "Upgrade commands",
+            language: "bash",
+          },
+        },
+        { type: "text", text: "\n", id: "t-md-br-9" },
+        { type: "text", text: "```", id: "t-md-fence-close" },
+        {
+          type: "conditional",
+          id: "c-md-upgrade-notes",
+          condition: "includeUpgradeNotes == true",
+          content: [
+            { type: "text", text: "\n\n", id: "t-md-br-10" },
+            {
+              type: "placeholder",
+              id: "p-md-upgrade-notes",
+              instructionType: "markdown_block",
+              config: {
+                description:
+                  "a short section of upgrade notes for ${product} ${releaseVersion}, including one warning block quote",
+                displayName: "Upgrade notes",
               },
             },
           ],
