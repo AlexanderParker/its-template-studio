@@ -565,9 +565,13 @@ export const sampleTemplates: SampleTemplate[] = [
       content: [
         {
           type: "text",
-          text: "# CI configuration for ${project.name}\n# Repository: ${project.repository}\n\nimage: ",
+          text: "# CI configuration for ${project.name}",
           id: "t-header-comment",
         },
+        { type: "text", text: "\n", id: "t-br-1" },
+        { type: "text", text: "# Repository: ${project.repository}", id: "t-repo-comment" },
+        { type: "text", text: "\n\n", id: "t-br-2" },
+        { type: "text", text: "image: ", id: "t-image-key" },
         {
           type: "placeholder",
           id: "p-build-image",
@@ -578,11 +582,13 @@ export const sampleTemplates: SampleTemplate[] = [
             valueType: "string",
           },
         },
+        { type: "text", text: "\n\n", id: "t-br-3" },
         {
           type: "text",
-          text: "\n\nstages:\n  - build\n  - test\n\nbuild:\n  stage: build\n  script:\n",
+          text: "stages:\n  - build\n  - test\n\nbuild:\n  stage: build\n  script:",
           id: "t-build-job",
         },
+        { type: "text", text: "\n", id: "t-br-4" },
         {
           type: "placeholder",
           id: "p-build-script",
@@ -593,11 +599,13 @@ export const sampleTemplates: SampleTemplate[] = [
             indentSpaces: 4,
           },
         },
+        { type: "text", text: "\n\n", id: "t-br-5" },
         {
           type: "text",
-          text: "\n\ntest:\n  stage: test\n  script:\n",
+          text: "test:\n  stage: test\n  script:",
           id: "t-test-job",
         },
+        { type: "text", text: "\n", id: "t-br-6" },
         {
           type: "placeholder",
           id: "p-test-script",
@@ -613,11 +621,13 @@ export const sampleTemplates: SampleTemplate[] = [
           id: "c-deploy-stage",
           condition: "includeDeployStage == true",
           content: [
+            { type: "text", text: "\n\n", id: "t-br-7" },
             {
               type: "text",
-              text: "\n\ndeploy:\n  stage: deploy\n  only:\n    - main\n",
+              text: "deploy:\n  stage: deploy\n  only:\n    - main",
               id: "t-deploy-open",
             },
+            { type: "text", text: "\n", id: "t-br-8" },
             {
               type: "placeholder",
               id: "p-deploy-fields",
@@ -652,11 +662,11 @@ export const sampleTemplates: SampleTemplate[] = [
         includeEnquiryForm: false,
       },
       content: [
-        {
-          type: "text",
-          text: '<section class="product-card">\n  <h2><a href="${product.url}">${product.name}</a></h2>\n  <p class="product-card__summary">',
-          id: "t-card-open",
-        },
+        { type: "text", text: '<section class="product-card">', id: "t-card-open" },
+        { type: "text", text: "\n", id: "t-hbr-1" },
+        { type: "text", text: '  <h2><a href="${product.url}">${product.name}</a></h2>', id: "t-card-title" },
+        { type: "text", text: "\n", id: "t-hbr-2" },
+        { type: "text", text: '  <p class="product-card__summary">', id: "t-summary-open" },
         {
           type: "placeholder",
           id: "p-summary",
@@ -667,11 +677,12 @@ export const sampleTemplates: SampleTemplate[] = [
             allowInlineMarkup: true,
           },
         },
-        {
-          type: "text",
-          text: '</p>\n\n  <h3>Key features</h3>\n  <ul class="product-card__features">\n',
-          id: "t-features-heading",
-        },
+        { type: "text", text: "</p>", id: "t-summary-close" },
+        { type: "text", text: "\n\n", id: "t-hbr-3" },
+        { type: "text", text: "  <h3>Key features</h3>", id: "t-features-heading" },
+        { type: "text", text: "\n", id: "t-hbr-4" },
+        { type: "text", text: '  <ul class="product-card__features">', id: "t-features-open" },
+        { type: "text", text: "\n", id: "t-hbr-5" },
         {
           type: "placeholder",
           id: "p-feature-items",
@@ -682,21 +693,23 @@ export const sampleTemplates: SampleTemplate[] = [
             itemCount: 4,
           },
         },
-        {
-          type: "text",
-          text: "\n  </ul>\n",
-          id: "t-features-close",
-        },
+        { type: "text", text: "\n", id: "t-hbr-6" },
+        { type: "text", text: "  </ul>", id: "t-features-close" },
+        { type: "text", text: "\n", id: "t-hbr-7" },
         {
           type: "conditional",
           id: "c-specifications",
           condition: "includeSpecifications == true",
           content: [
+            { type: "text", text: "\n", id: "t-hbr-8" },
+            { type: "text", text: "  <h3>Specifications</h3>", id: "t-specs-heading" },
+            { type: "text", text: "\n", id: "t-hbr-9" },
             {
               type: "text",
-              text: '\n  <h3>Specifications</h3>\n  <table class="product-card__specs">\n    <thead>\n      <tr><th>Specification</th><th>Value</th></tr>\n    </thead>\n    <tbody>\n',
+              text: '  <table class="product-card__specs">\n    <thead>\n      <tr><th>Specification</th><th>Value</th></tr>\n    </thead>\n    <tbody>',
               id: "t-specs-open",
             },
+            { type: "text", text: "\n", id: "t-hbr-10" },
             {
               type: "placeholder",
               id: "p-spec-rows",
@@ -708,11 +721,13 @@ export const sampleTemplates: SampleTemplate[] = [
                 columns: 2,
               },
             },
+            { type: "text", text: "\n", id: "t-hbr-11" },
             {
               type: "text",
-              text: "\n    </tbody>\n  </table>\n",
+              text: "    </tbody>\n  </table>",
               id: "t-specs-close",
             },
+            { type: "text", text: "\n", id: "t-hbr-12" },
           ],
         },
         {
@@ -720,11 +735,11 @@ export const sampleTemplates: SampleTemplate[] = [
           id: "c-enquiry-form",
           condition: "includeEnquiryForm == true",
           content: [
-            {
-              type: "text",
-              text: '\n  <h3>Ask about this product</h3>\n  <div class="product-card__enquiry">\n',
-              id: "t-enquiry-open",
-            },
+            { type: "text", text: "\n", id: "t-hbr-13" },
+            { type: "text", text: "  <h3>Ask about this product</h3>", id: "t-enquiry-heading" },
+            { type: "text", text: "\n", id: "t-hbr-14" },
+            { type: "text", text: '  <div class="product-card__enquiry">', id: "t-enquiry-open" },
+            { type: "text", text: "\n", id: "t-hbr-15" },
             {
               type: "placeholder",
               id: "p-enquiry-fields",
@@ -736,18 +751,13 @@ export const sampleTemplates: SampleTemplate[] = [
                 includeLabels: true,
               },
             },
-            {
-              type: "text",
-              text: "\n  </div>\n",
-              id: "t-enquiry-close",
-            },
+            { type: "text", text: "\n", id: "t-hbr-16" },
+            { type: "text", text: "  </div>", id: "t-enquiry-close" },
+            { type: "text", text: "\n", id: "t-hbr-17" },
           ],
         },
-        {
-          type: "text",
-          text: "\n</section>",
-          id: "t-card-close",
-        },
+        { type: "text", text: "\n", id: "t-hbr-18" },
+        { type: "text", text: "</section>", id: "t-card-close" },
       ],
     },
   },
