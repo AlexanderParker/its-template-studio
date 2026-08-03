@@ -38,6 +38,32 @@ export async function compileOnServer(
       body: JSON.stringify({ template, variables }),
       signal: AbortSignal.timeout(30_000),
     });
+    // The hosted services are public and throttled per address, so a busy
+    // visitor sees 429 rather than a compile failure. Say what happened and
+    // what to do about it, rather than surfacing a bare status code.
+    if (response.status === 429) {
+      const retryAfter = Number(response.headers.get("Retry-After")) || 0;
+      const wait = retryAfter > 0 ? ` Try again in ${retryAfter} seconds.` : "";
+      return {
+        ok: false,
+        warnings: [],
+        error:
+          `The hosted ${engine === "dotnet" ? ".NET" : "Python"} compile service is rate limited.${wait}` +
+          " The browser engine has no limits, and running the service locally has none either.",
+        durationMs: performance.now() - started,
+        engine,
+      };
+    }
+    if (response.status === 413) {
+      return {
+        ok: false,
+        warnings: [],
+        error:
+          "That template is too large for the hosted demo service. Use the browser engine, or run the service locally.",
+        durationMs: performance.now() - started,
+        engine,
+      };
+    }
     const body = (await response.json()) as ServerCompileResponse;
     if (!response.ok || !body.ok) {
       return {

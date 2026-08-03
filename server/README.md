@@ -43,3 +43,28 @@ The production URL is https://compile-server-production-529e.up.railway.app. Env
 - `ITS_CORS_ORIGINS` (optional): comma-separated allowed origins, overriding the default allowlist in `app.py`.
 
 A sibling .NET service (`compile-server-dotnet`) serves the same contract, deployed from the [its-compiler-dotnet](https://github.com/AlexanderParker/its-compiler-dotnet) repository.
+
+## Abuse protection
+
+A deployed instance is a public endpoint that costs its operator compute and
+egress. CORS does not protect it: browsers enforce CORS, anything else ignores
+it, and the demo is a static site so it cannot hold a secret to send either.
+
+Requests are throttled per client address over two windows, and the body is
+capped before it is read.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `ITS_RATE_LIMIT_PER_MINUTE` | 30 | Burst limit. `0` disables this window. |
+| `ITS_RATE_LIMIT_PER_HOUR` | 300 | Catches sustained scraping that stays under the burst limit. `0` disables. |
+| `ITS_RATE_LIMIT_MAX_TRACKED` | 10000 | Addresses held before a sweep, so the table cannot grow without bound. |
+| `ITS_MAX_REQUEST_BYTES` | 524288 | Largest accepted body. Rejected with 413. |
+
+Setting both limits to `0` turns throttling off for a private deployment.
+
+The client address is the rightmost `X-Forwarded-For` entry. The leftmost is
+set by the caller, and rotating a fake value would otherwise lift the limit
+entirely. `/health` is never throttled, so a platform probe cannot trip it.
+
+A refused request does not count against the caller, so a client retrying in a
+loop still recovers when its window expires.
