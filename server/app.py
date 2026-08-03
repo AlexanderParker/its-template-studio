@@ -9,13 +9,16 @@ demo front end can compile templates server-side. Exposes:
 """
 
 import os
+import time
 from typing import Any, Dict, Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from its_compiler import ITSCompiler
+from rate_limit import RateLimiter, client_address
 
 # Comma-separated allowed origins. The default covers the published demo on
 # GitHub Pages plus common local dev origins; the dev proxy keeps local
@@ -29,6 +32,67 @@ DEFAULT_CORS_ORIGINS = (
 )
 
 app = FastAPI(title="ITS Compile Service", version="0.1.0")
+
+# This service is public and costs the operator compute and egress. CORS does
+# not protect it: browsers enforce it, anything else ignores it. The demo is a
+# static site so it cannot hold a secret either, which leaves throttling by
+# address as the control that actually works.
+LIMITER = RateLimiter.from_environment()
+
+# Compilation is bounded by the compiler's own limits, but the body is read
+# before any of those apply, so it is capped here first.
+MAX_REQUEST_BYTES = int(os.getenv("ITS_MAX_REQUEST_BYTES", str(512 * 1024)))
+
+# Paths that must answer even when a caller is being throttled, so the platform
+# health check never trips the limiter.
+UNLIMITED_PATHS = {"/health", "/docs", "/openapi.json"}
+
+
+@app.middleware("http")
+async def guard(request: Request, call_next):  # type: ignore[no-untyped-def]
+    if request.method == "OPTIONS" or request.url.path in UNLIMITED_PATHS:
+        return await call_next(request)
+
+    declared = request.headers.get("content-length")
+    if declared is not None and declared.isdigit() and int(declared) > MAX_REQUEST_BYTES:
+        return JSONResponse(
+            status_code=413,
+            content={
+                "ok": False,
+                "error": f"Request body exceeds {MAX_REQUEST_BYTES} bytes.",
+            },
+        )
+
+    if LIMITER.enabled:
+        # An unidentifiable caller shares one bucket rather than bypassing the
+        # limit, which is the safe direction to fail.
+        key = client_address(request.headers.items()) or "unknown"
+        decision = LIMITER.check(key, time.monotonic())
+        if not decision.allowed:
+            return JSONResponse(
+                status_code=429,
+                content={
+                    "ok": False,
+                    "error": (
+                        "This demo service limits how often it can be called. "
+                        f"Try again in {decision.retry_after} seconds, or run it "
+                        "locally without limits."
+                    ),
+                },
+                headers={
+                    "Retry-After": str(decision.retry_after),
+                    "RateLimit-Limit": str(LIMITER.minute.limit),
+                    "RateLimit-Remaining": "0",
+                    "RateLimit-Reset": str(decision.retry_after),
+                },
+            )
+
+        response = await call_next(request)
+        response.headers["RateLimit-Limit"] = str(LIMITER.minute.limit)
+        response.headers["RateLimit-Remaining"] = str(decision.remaining)
+        return response
+
+    return await call_next(request)
 
 app.add_middleware(
     CORSMiddleware,
