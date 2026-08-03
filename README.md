@@ -1,6 +1,6 @@
 # ITS Template Studio
 
-A WYSIWYG editor and compile playground for the [Instruction Template Specification (ITS)](https://alexanderparker.github.io/instruction-template-specification/). Build templates visually, inject sample variable datasets, and compile them to AI prompts through three engines: [its-compiler-js](https://github.com/alexanderparker/its-compiler-js) in the browser, the Python [its-compiler](https://pypi.org/project/its-compiler/) service, or the .NET [Its.Compiler](https://github.com/AlexanderParker/its-compiler-dotnet) service.
+A WYSIWYG editor and compile playground for the [Instruction Template Specification (ITS)](https://alexanderparker.github.io/instruction-template-specification/). Build templates visually, inject sample variable datasets, and compile them to AI prompts through three engines: [its-compiler-js](https://github.com/alexanderparker/its-compiler-js) in the browser, the Python [its-compiler](https://pypi.org/project/its-compiler/) service, or the .NET [InstructionTemplateSpecification.Compiler](https://github.com/AlexanderParker/its-compiler-dotnet) service.
 
 **Live demo:** https://alexanderparker.github.io/its-template-studio/
 
@@ -23,7 +23,7 @@ npm install
 npm run dev
 ```
 
-Open the printed URL. The browser engine works immediately; the server engines need their services running: the Python service locally on port 8402 (see below) and the .NET service on port 8404 (`dotnet run --project samples/Its.Compiler.Service` in its-compiler-dotnet).
+Open the printed URL. The browser engine works immediately; the server engines need their services running: the Python service locally on port 8402 (see below) and the .NET service on port 8404 (`dotnet run --project samples/InstructionTemplateSpecification.Compiler.Service` in its-compiler-dotnet).
 
 ## Demo features
 
@@ -41,7 +41,7 @@ Open the printed URL. The browser engine works immediately; the server engines n
 - **Three compile engines**:
   - Browser: `its-compiler-js` bundled into the page. Remote `extends` schemas resolve over HTTPS from the browser; an "inline bundled type libraries" option substitutes bundled copies of any referenced library for offline use.
   - Server (Python): POSTs the template and variables through the dev proxy to the FastAPI service, which compiles with the Python reference implementation.
-  - Server (.NET): the same contract served by `Its.Compiler.Service` from [its-compiler-dotnet](https://github.com/AlexanderParker/its-compiler-dotnet); in development the dev proxy forwards `/its-dotnet-api` to a local instance on port 8404 (`dotnet run --project samples/Its.Compiler.Service`).
+  - Server (.NET): the same contract served by `InstructionTemplateSpecification.Compiler.Service` from [its-compiler-dotnet](https://github.com/AlexanderParker/its-compiler-dotnet); in development the dev proxy forwards `/its-dotnet-api` to a local instance on port 8404 (`dotnet run --project samples/InstructionTemplateSpecification.Compiler.Service`).
 
 ## Server-side compiler
 
@@ -121,6 +121,14 @@ The .NET engine works the same way through `VITE_ITS_DOTNET_API_URL`, currently 
 - [its-template-editor](https://github.com/AlexanderParker/its-wysiwyg-common) - the WYSIWYG React editor component behind the studio
 - [its-compiler-js](https://github.com/AlexanderParker/its-compiler-js) - JavaScript/TypeScript reference compiler ([npm](https://www.npmjs.com/package/its-compiler-js))
 - [its-compiler-python](https://github.com/AlexanderParker/its-compiler-python) - Python reference compiler library ([PyPI](https://pypi.org/project/its-compiler/))
-- [its-compiler-dotnet](https://github.com/AlexanderParker/its-compiler-dotnet) - .NET compiler with an Azure Functions sample ([NuGet](https://www.nuget.org/packages/Its.Compiler))
+- [its-compiler-dotnet](https://github.com/AlexanderParker/its-compiler-dotnet) - .NET compiler with an Azure Functions sample ([NuGet](https://www.nuget.org/packages/InstructionTemplateSpecification.Compiler))
 - [its-compiler-cli](https://github.com/AlexanderParker/its-compiler-cli-python) - command-line interface for the Python compiler ([PyPI](https://pypi.org/project/its-compiler-cli/))
 - [its-example-templates](https://github.com/AlexanderParker/its-example-templates) - example and test templates exercising the published schemas
+
+## Trademarks
+
+Third-party names are used only to describe interoperability, and no
+affiliation or endorsement is implied. Azure is a trademark of Microsoft
+Corporation. GitHub is a trademark of GitHub, Inc. Railway is a trademark of
+Railway Corp. All other trademarks are the property of their respective
+owners.
