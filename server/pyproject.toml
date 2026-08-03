@@ -5,10 +5,7 @@ description = "HTTP compile service wrapping the its-compiler reference implemen
 requires-python = ">=3.10"
 dependencies = [
     "fastapi[standard]>=0.111",
-    "its-compiler>=1.0.4",
+    # 1.2.1 is the first release rendering scalars identically to the other
+    # compilers. Bounded below the next major, which may change that output.
+    "its-compiler>=1.2.1,<2.0.0",
 ]
-
-# Temporary until its-compiler 1.2.0 is on PyPI: resolve from git so the
-# deployed service has reference data support matching the browser engine.
-[tool.uv.sources]
-its-compiler = { git = "https://github.com/AlexanderParker/its-compiler-python" }

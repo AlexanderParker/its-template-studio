@@ -7,7 +7,6 @@ A WYSIWYG editor and compile playground for the [Instruction Template Specificat
 ## Repository layout
 
 ```
-packages/its-editor/   its-template-editor: working mirror of the standalone its-wysiwyg-common repo
 demo/                  Vite + React demo app driving all three engines (samples, import/export)
 server/                FastAPI service wrapping the Python reference compiler
 ```
@@ -52,17 +51,32 @@ cd server
 uv run fastapi dev app.py --port 8402
 ```
 
-uv creates the environment and installs dependencies from `pyproject.toml` on first run, with its-compiler pinned to git via `[tool.uv.sources]` in `server/pyproject.toml`. Then choose the Server engine in the demo; requests route through the Vite dev proxy (`/its-api`), so no cross-origin requests are involved. See `server/README.md` for endpoint details.
+uv creates the environment and installs dependencies from `pyproject.toml` on first run, resolving its-compiler from PyPI. Then choose the Server engine in the demo; requests route through the Vite dev proxy (`/its-api`), so no cross-origin requests are involved. See `server/README.md` for endpoint details.
 
 ## The editor as a standalone component
 
-`packages/its-editor` contains `its-template-editor`, a controlled React component with no compiler or network dependencies; the demo consumes it from source through a Vite alias. The directory is a working mirror of the standalone [its-wysiwyg-common](https://github.com/AlexanderParker/its-wysiwyg-common) repository, which holds the publishable copy and the release workflow; the two are kept in sync manually. The npm package name is `its-template-editor` (currently 0.8.1, publication pending). To produce a publishable build:
+The editor is [`its-template-editor`](https://www.npmjs.com/package/its-template-editor), a controlled React component with no compiler and no network access, published from [its-wysiwyg-common](https://github.com/AlexanderParker/its-wysiwyg-common). The demo consumes it from the registry like any other dependency; there is no local copy to keep in sync.
+
+### Working on the editor and the demo together
+
+To try an unreleased editor change without publishing, link the two checkouts:
 
 ```bash
-npm run build:editor
+# in its-wysiwyg-common
+npm run build
+npm link
+
+# in its-template-studio
+npm link its-template-editor --workspace demo
+npm run dev
 ```
 
-This emits ESM, CJS, type declarations and the stylesheet to `packages/its-editor/dist`. See `packages/its-editor/README.md` for the component API.
+Rebuild the editor after each change; Vite picks up the new output. To go back to the published version:
+
+```bash
+npm unlink its-template-editor --workspace demo
+npm install
+```
 
 ## How the browser build works
 
@@ -107,9 +121,7 @@ The .NET engine works the same way through `VITE_ITS_DOTNET_API_URL`, currently 
 | ---------------------- | ------------------------------------------------------------ |
 | `npm run dev`          | Start the demo dev server                                     |
 | `npm run build`        | Production build of the demo                                  |
-| `npm run build:editor` | Build the publishable editor package                          |
-| `npm run typecheck`    | Strict TypeScript checks across all workspaces                |
-| `npm test -w its-template-editor` | Run the editor package's vitest suites             |
+| `npm run typecheck`    | Strict TypeScript checks                                      |
 | `npm test -w demo`     | Run the demo's vitest unit suite (palette scoping)            |
 | `npm run smoke -w demo`| Compile every sample template with every applicable dataset   |
 | `npm run preview -w demo` | Serve the production build locally                         |
